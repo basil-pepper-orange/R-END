@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>REMAINS at the END ― 世界の記憶を繋ぎとめる物語</title>
+
+<meta name="description" content="崩壊した世界で、失われた景色と人の記憶を繋ぎとめる。ブラウザで遊べるカードRPG。">
+<meta property="og:title" content="REMAINS at the END">
+<meta property="og:description" content="崩壊した世界で、失われた景色と人の記憶を繋ぎとめる。ブラウザで遊べるカードRPG。">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="icons/icon192.png">
+<link rel="apple-touch-icon" href="icons/icon192.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b0d12">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="REMAINS at the END">
+<link rel="stylesheet" href="style.css?v=111">
+</head>
+<body>
+
+<div id="app">
+
+  <header class="hud" id="hud">
+    <button type="button" class="hud__back" id="btn-back" hidden>‹ もどる</button>
+    <div class="hud__title" id="hud-title">REMAINS at the END</div>
+    <button type="button" class="hud__sound" id="btn-sound" aria-label="音の設定">
+      <span class="hud__spk"></span>
+    </button>
+    <div class="hud__shards"><span class="shard-icon"></span><span id="hud-shards">0</span></div>
+  </header>
+
+  <div class="sound-panel" id="sound-panel" hidden></div>
+
+  <main class="stagearea" id="screens">
+
+    <section class="screen is-active" id="screen-home">
+      <div class="bg bg--ui" id="home-bg"></div>
+      <div class="home__sky"></div>
+      <div class="home__inner">
+
+        <h1 class="home__title home__title--latin">REMAINS<span class="home__title__sm"> at the </span>END</h1>
+        <p class="home__sub">― 世界の記憶を繋ぎとめる物語 ―</p>
+
+        <p class="home__story" id="home-story"></p>
+
+        <div class="home__actions">
+          <button type="button" class="btn btn--main" id="btn-go-stage">探索へ</button>
+          <button type="button" class="btn btn--sub" id="btn-go-party">パーティ編成</button>
+          <button type="button" class="btn btn--sub" id="btn-go-book">記憶の図鑑</button>
+
+          <button type="button" class="btn btn--sub" id="btn-go-records">記憶の碑</button>
+
+          <button type="button" class="btn btn--sub" id="btn-go-ending" hidden>旅の終わりを見る</button>
+        </div>
+
+        <div class="home__sub-actions">
+          <button type="button" class="btn home__link" id="btn-storage">旅の記憶を残す</button>
+          <button type="button" class="btn home__link" id="btn-awaken">記憶を呼び覚ます</button>
+        </div>
+
+        <p class="home__save"><span>進行はブラウザ上に自動保存されます。</span><span>状況により消えるため「旅の記憶を残す」を使用ください。</span></p>
+        <div class="home__sub-actions">
+
+          <button type="button" class="home__reset home__reset--help" id="btn-help">はじめての方へ</button>
+          <button type="button" class="home__reset" id="btn-reset">データを消して はじめから</button>
+        </div>
+
+        <p class="home__copy" id="home-copy" hidden></p>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-gacha">
+      <div class="gacha">
+        <h2 class="gacha__name" id="gacha-name">記憶の呼び声</h2>
+        <p class="gacha__desc" id="gacha-desc"></p>
+
+        <div class="gacha__say" id="gacha-say"></div>
+        <div class="gacha__card" id="gacha-card">
+          <div class="gacha__idle" id="gacha-idle">…</div>
+          <img class="gacha__img" id="gacha-img" alt="">
+          <div class="gacha__caption" id="gacha-caption"></div>
+        </div>
+
+        <div class="gmulti" id="gacha-multi" hidden></div>
+        <p class="gacha__note" id="gacha-note"></p>
+        <div class="gacha__actions">
+          <button type="button" class="btn btn--main" id="btn-pull">引く<span class="btn__cost" id="pull-cost"></span></button>
+          <button type="button" class="btn btn--main btn--pull10" id="btn-pull10">10連<span class="btn__cost" id="pull10-cost"></span></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-party">
+      <div class="party">
+        <h3 class="sec__h">パーティ<span class="sec__note">つかんで動かす／つまんでタップで入れ替え</span></h3>
+
+        <div class="party__row">
+          <div class="party__slots" id="party-slots"></div>
+          <div class="party__slots party__slots--sub" id="party-reserve"></div>
+        </div>
+        <div class="party__total" id="party-total"></div>
+        <h3 class="sec__h">仲間</h3>
+        <div class="charlist" id="charlist"></div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-book">
+      <div class="book">
+        <h3 class="sec__h">風景の記憶 <span class="sec__count" id="book-count"></span></h3>
+        <div class="booklist" id="booklist"></div>
+        <h3 class="sec__h">出会った人 <span class="sec__count" id="book-char-count"></span></h3>
+        <div class="booklist booklist--char" id="bookchars"></div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-stage">
+      <div class="stages" id="stages"></div>
+    </section>
+
+    <section class="screen" id="screen-tale">
+      <div class="tale">
+        <div class="tale__body" id="tale-body"></div>
+        <div class="tale__btns">
+          <button type="button" class="btn btn--main" id="btn-tale-go">この景色へ進む</button>
+          <button type="button" class="btn btn--ghost" id="btn-tale-skip">読み飛ばす</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-ending">
+      <div class="bg bg--ui" id="ending-bg"></div>
+      <div class="ending" id="ending-body"></div>
+      <div class="ending__btns">
+        <button type="button" class="btn btn--main" id="btn-ending-go">スタッフロールへ</button>
+        <button type="button" class="btn btn--ghost" id="btn-ending-back" hidden>拠点へもどる</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-credits">
+      <div class="bg bg--ui" id="credits-bg"></div>
+      <div class="credits" id="credits-stage">
+        <div class="credits__roll" id="credits-roll"></div>
+      </div>
+      <div class="credits__btns">
+        <button type="button" class="btn btn--ghost" id="btn-credits-skip">最後まで送る</button>
+        <button type="button" class="btn btn--main" id="btn-credits-ok" hidden>おわり</button>
+      </div>
+    </section>
+
+    <section class="screen screen--battle" id="screen-battle">
+      <div class="bg" id="battle-bg"></div>
+      <div class="battle">
+        <div class="enemy" id="enemy">
+          <div class="enemy__stage">
+            <div class="enemy__body" id="enemy-body"><span class="enemy__glyph">✧</span></div>
+
+            <div class="enemyline" id="enemyline"></div>
+
+            <div class="enemyfx" id="enemyfx"></div>
+
+            <div class="enemy__info">
+              <div class="enemy__top">
+                <span class="elem elem--sm" id="enemy-elem"></span>
+                <span class="enemy__label" id="enemy-label"></span>
+                <span class="enemy__name" id="enemy-name"></span>
+              </div>
+              <div class="bar bar--enemy"><span id="enemy-hpfill"></span></div>
+              <div class="enemy__hpnum" id="enemy-hpnum"></div>
+
+              <div class="ragebar" id="enemy-rageline" hidden>
+                <span class="ragebar__label" id="enemy-ragelabel">崩壊</span>
+                <span class="ragebar__track"><span class="ragebar__fill" id="enemy-ragefill"></span></span>
+                <span class="ragebar__num" id="enemy-ragenum">0%</span>
+              </div>
+              <div class="enemy__rage" id="enemy-rage"></div>
+
+              <div class="log" id="log"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="units-wrap">
+          <div class="units" id="units"></div>
+
+          <div class="unitfx" id="unitfx"></div>
+        </div>
+
+        <div class="skillcut" id="skillcut" hidden>
+          <div class="skillcut__streak"></div>
+          <div class="skillcut__art"><img id="skillcut-img" alt=""></div>
+          <div class="skillcut__txt">
+            <div class="skillcut__name" id="skillcut-name"></div>
+            <div class="skillcut__line" id="skillcut-line"></div>
+          </div>
+        </div>
+
+        <div class="cmdbar">
+          <div class="cmdbar__turn" id="turn-label"></div>
+          <button type="button" class="btn btn--ghost btn--flee" id="btn-flee">離脱</button>
+          <button type="button" class="btn btn--ghost" id="btn-history" hidden>履歴</button>
+
+          <button type="button" class="btn btn--ghost btn--swap" id="btn-swap">控え交代</button>
+          <button type="button" class="btn btn--exec" id="btn-exec">実行</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-records">
+      <div class="stone">
+        <div class="stone__me">
+          <span class="stone__label">あなたの名</span>
+          <button type="button" class="stone__name" id="stone-name">名もなき者</button>
+        </div>
+
+        <p class="stone__lead">記憶の碑には、直近10件の戦いの記憶が残りますが、「旅の記憶を残す」機能で残すことはできません。戦いの記憶は、スクリーンショットを撮ってXなどで共有しましょう！</p>
+        <div class="stone__list" id="stone-list"></div>
+        <p class="stone__note" id="stone-note"></p>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-result">
+      <div class="bg bg--ui" id="result-bg"></div>
+      <div class="result">
+        <h2 class="result__h" id="result-h"></h2>
+        <div class="result__body" id="result-body"></div>
+        <div class="result__btns">
+          <button type="button" class="btn btn--main" id="btn-result-ok">拠点へ戻る</button>
+          <button type="button" class="btn btn--sub" id="btn-result-record" hidden>戦いの記憶を残す</button>
+          <button type="button" class="btn btn--sub" id="btn-result-history" hidden>戦闘の記録を見る</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="dock" id="dock">
+    <button type="button" class="dock__btn" id="dock-char">
+      <span class="dock__ico dock__ico--char"></span>
+      <span class="dock__cap">味方キャラ<br>を探す</span>
+      <span class="dock__cost" id="dock-char-cost"></span>
+    </button>
+    <button type="button" class="dock__btn" id="dock-land">
+      <span class="dock__ico dock__ico--land"></span>
+      <span class="dock__cap">風景装備<br>を探す</span>
+      <span class="dock__cost" id="dock-land-cost"></span>
+    </button>
+  </div>
+
+  <div class="modal" id="modal" hidden>
+    <div class="modal__panel" id="modal-panel"></div>
+  </div>
+
+  <div class="viewer" id="viewer" hidden>
+    <div class="viewer__stage" id="viewer-stage">
+      <img class="viewer__img" id="viewer-img" alt="" draggable="false">
+    </div>
+    <div class="viewer__cap" id="viewer-cap"></div>
+    <div class="viewer__hint">ドラッグで移動／ダブルタップ・ピンチで拡大</div>
+    <button type="button" class="viewer__close" id="viewer-close" aria-label="閉じる">×</button>
+  </div>
+
+  <div class="reveal" id="reveal" aria-hidden="true">
+    <div class="reveal__door reveal__door--l"></div>
+    <div class="reveal__door reveal__door--r"></div>
+    <div class="reveal__fx">
+      <div class="reveal__rays"></div>
+      <div class="reveal__ring"></div>
+      <div class="reveal__ring reveal__ring--2"></div>
+      <div class="reveal__ring reveal__ring--3"></div>
+      <div class="reveal__sparks" id="reveal-sparks"></div>
+      <div class="reveal__seam"></div>
+      <div class="reveal__flash"></div>
+    </div>
+    <p class="reveal__text" id="reveal-text"></p>
+  </div>
+
+  <div class="blackout" id="blackout" aria-hidden="true"></div>
+
+  <div class="toast" id="toast"></div>
+
+</div>
+
+<script src="data.js?v=111"></script>
+<script src="game.js?v=111"></script>
+</body>
+</html>
