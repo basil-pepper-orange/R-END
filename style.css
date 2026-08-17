@@ -91,9 +91,13 @@ button:disabled { opacity: .4; cursor: default; }
 }
 
 .hud__back {
-  font-size: 13px; color: var(--text-dim); padding: 6px 8px; margin-left: -8px;
+  font-size: 13px; color: var(--accent);
+  display: flex; align-items: center; gap: 1px;
+  min-height: 32px; padding: 5px 15px 5px 12px;
+  margin-left: 0; letter-spacing: .08em;
+  background: rgba(216,196,138,.09);
 }
-.hud__back:active { color: var(--accent); }
+.hud__back:active { background: rgba(216,196,138,.2); }
 
 .hud__title {
   flex: 1 1 auto;
@@ -1910,6 +1914,32 @@ b.lost, .lost { color: #ff9db4; }
 
 .eqpick .bcard__eq { font-size: calc(var(--eqpick-cap) - 2.5px); top: 6px; right: 6px; padding: 2px 6px; border-radius: 4px }
 
+.eqpick .bcard.is-pick { outline: 2px solid var(--accent); outline-offset: -2px }
+
+.eqpeek {
+  position: sticky; bottom: 0; z-index: 3;
+  margin-top: 12px; padding: 10px 0 2px;
+  background: linear-gradient(180deg, rgba(21,25,35,0), var(--bg-soft) 26%, var(--bg-soft));
+}
+.eqpeek.is-rise { animation: eqpeek-rise .22s ease both }
+@keyframes eqpeek-rise {
+  from { opacity: 0; transform: translateY(12px) }
+  to   { opacity: 1; transform: translateY(0) }
+}
+
+.eqpeek__box {
+  display: flex; gap: 11px; align-items: center;
+  padding: 10px 11px; border-radius: 10px;
+  background: var(--panel); border: 1px solid var(--accent-dk);
+  box-shadow: 0 6px 22px rgba(0,0,0,.5);
+}
+.eqpeek__box img { width: 52px; aspect-ratio: var(--land-ratio); object-fit: cover; border-radius: 5px; flex: none }
+.eqpeek__box b { font-size: 13.5px }
+.eqpeek__box small { display: block; font-size: 11px; color: var(--text-dim); line-height: 1.7; margin-top: 4px }
+.eqpeek__note { font-size: 11px; color: var(--memo); text-align: center; margin-top: 7px }
+.eqpeek__go { width: 100%; margin-top: 9px; min-height: 44px }
+.eqpeek__go[disabled] { opacity: .5 }
+
 .hist {
   margin-top: 10px;
   max-height: 58dvh;
@@ -2052,6 +2082,8 @@ b.lost, .lost { color: #ff9db4; }
 .toast.is-on { animation: toast var(--toast-ms, 2.2s) ease both }
 
 .toast.is-hold {
+
+  bottom: var(--hold-bottom, 96px);
   opacity: 1; transform: translate(-50%, 0);
   white-space: normal; max-width: min(86%, 420px); line-height: 1.55;
   text-align: center; animation: toast-in .18s ease both;
