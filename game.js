@@ -29,8 +29,36 @@ function toastHold(msg, key) {
   t.textContent = msg;
   t.classList.remove('is-on');
   void t.offsetWidth;
+  liftToastAboveUnits(t);
   t.classList.add('is-hold');
   toastHeld = true;
+}
+
+function liftToastAboveUnits(t) {
+  t.style.removeProperty('--hold-bottom');
+  const un = $('units');
+  const app = t.offsetParent || $('app');
+  if (!un || !app) return;
+  const ar = app.getBoundingClientRect();
+  if (!ar.height) return;
+
+  let ref = null;
+  Array.prototype.forEach.call(un.querySelectorAll('.unit__info'), (el) => {
+    const r = el.getBoundingClientRect();
+    if (!r.height) return;
+    if (ref == null || r.top < ref) ref = r.top;
+  });
+  let gap = 4;
+  if (ref == null) {
+    const ur = un.getBoundingClientRect();
+    if (!ur.height) return;
+    ref = ur.top;
+    gap = 10;
+  }
+  let bottom = ar.bottom - ref + gap;
+  const max = Math.max(0, ar.height - 120);
+  bottom = Math.max(0, Math.min(bottom, max));
+  t.style.setProperty('--hold-bottom', Math.round(bottom) + 'px');
 }
 function toastHide() {
   const t = $('toast');
@@ -2042,10 +2070,57 @@ function openEquipModal(cid) {
     <div class="md__title">装備する景色をえらぶ</div>
     <div class="md__sub">1枚の景色を装備できるのは1人だけ。<br>
       ランクの数だけスキルが使えます（同じ景色を引くとランクが上がります）</div>
-    <div class="md__label">所持している景色 ${owned.length} / ${LANDSCAPES.length}</div>
+    <div class="md__label">所持している景色 ${owned.length} / ${LANDSCAPES.length}
+      <span class="dim">／景色を押すと効果が出ます</span></div>
     <div class="eqpick" id="eqpick"></div>
+    <div class="eqpeek" id="eqpeek" hidden></div>
   `);
   const wrap = $('eqpick');
+  const peek = $('eqpeek');
+
+  const equip = (l) => {
+    const holder = equippedBy(l.id);
+    if (holder && holder !== cid) S.chars[holder].eq = null;
+    S.chars[cid].eq = l.id;
+    save(); closeModal(); renderParty();
+    toast(`「${l.name}」を装備した`);
+  };
+
+  const showPeek = (l, btn) => {
+    Array.prototype.forEach.call(wrap.children, (c) => c.classList.remove('is-pick'));
+    btn.classList.add('is-pick');
+    const rk = landRank(l.id);
+    const bn = landBonus(l, rk);
+    const holder = equippedBy(l.id);
+    const mine = holder === cid;
+    const eff = landEffText(l, rk);
+    peek.innerHTML = `
+      <div class="eqpeek__box">
+        <img src="${CONFIG.landDir}${l.file}" alt="">
+        <div>
+          <b>${l.name}</b> ${rankStars(rk)}
+          <small>HP +${bn.hp}／こうげき +${bn.atk}／ぼうぎょ +${bn.def}<br>
+            スキルを <b class="up">${rk}</b> 回使える<br>
+            ${eff || 'とくべつな効果はない'}</small>
+        </div>
+      </div>
+      ${holder && !mine
+        ? `<div class="eqpeek__note">いまは <b>${charById(holder).name}</b> が装備しています</div>`
+        : ''}
+      <button type="button" class="btn eqpeek__go" id="eqpeek-go"${mine ? ' disabled' : ''}>${
+        mine ? 'この景色を装備しています'
+             : (holder ? `${charById(holder).name} から付け替える` : 'この景色を装備する')}</button>
+    `;
+    peek.hidden = false;
+
+    peek.classList.remove('is-rise');
+    void peek.offsetWidth;
+    peek.classList.add('is-rise');
+    const go = $('eqpeek-go');
+    if (go && !mine) go.onclick = () => equip(l);
+    if (peek.scrollIntoView) peek.scrollIntoView({ block: 'nearest' });
+  };
+
   owned.forEach((l) => {
     const holder = equippedBy(l.id);
     const used = holder && holder !== cid;
@@ -2056,18 +2131,10 @@ function openEquipModal(cid) {
     const bn = landBonus(l, rk);
     b.innerHTML = `<img src="${CONFIG.landDir}${l.file}" alt="">
       <span class="bcard__rank">技${rk}回</span>
+      ${holder ? `<span class="bcard__eq">${holder === cid ? '装備中' : '装備'}</span>` : ''}
       <span class="bcard__cap">${l.name}<br>HP+${bn.hp} 攻+${bn.atk} 防+${bn.def}
         ${l.eff && LAND_EFFECTS[l.eff.type] ? `<br><i class="bcard__eff">${LAND_EFFECTS[l.eff.type].name}</i>` : ''}</span>`;
-    b.onclick = () => {
-      if (used) {
-        const holderName = charById(holder).name;
-        if (!confirm(`「${l.name}」は ${holderName} が装備しています。付け替えますか？`)) return;
-        S.chars[holder].eq = null;
-      }
-      S.chars[cid].eq = l.id;
-      save(); closeModal(); renderParty();
-      toast(`「${l.name}」を装備した`);
-    };
+    b.onclick = () => showPeek(l, b);
     wrap.appendChild(b);
   });
 }
