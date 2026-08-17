@@ -1189,7 +1189,7 @@ function storyText() {
     const e = ENEMIES[i];
     if (S.cleared[e.id] && e.story) {
       return i === ENEMIES.length - 1
-        ? e.story + '<br>それでも、まだ見ぬ景色はどこかにある。'
+        ? e.story + '<br>まだ見ぬ景色にも、出会えるであろう。'
         : e.story;
     }
   }
