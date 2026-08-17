@@ -1007,6 +1007,9 @@ body.is-dragging .party { user-select: none; -webkit-user-select: none; }
 
 .log p .seal { color: #c6b3ff; }
 .log p .eff  { color: #8fd8c9; font-weight: 600; }
+
+.log p .up { color: #ffd98a; font-weight: 600; }
+.log p .dn { color: #ff9d9d; font-weight: 600; }
 .crank { color: #d9a6e8; font-size: .92em; letter-spacing: .02em; margin-left: 4px; }
 
 .crank--star { color: #ffd489; text-shadow: 0 0 6px rgba(255,200,120,.35); }

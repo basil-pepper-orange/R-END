@@ -2820,8 +2820,8 @@ function startBattle(eid) {
     pickRevive: null,
 
     fallen: [],
-    atkUp: 0,
-    atkUpRate: 0,
+
+    atkUps: [],
     critUp: 0,
     critUpMul: 1,
     burn: 0,
@@ -3060,7 +3060,7 @@ function renderBattle() {
   if (B.eSilence > 0) foe.push(dn(`技封じ 残${B.eSilence}`));
   if (B.burn > 0) foe.push(dn(`延焼 残${B.burn}`));
 
-  if (B.atkUp > 0) ally.push(up(`攻+${Math.round(B.atkUpRate * 100)}% 残${B.atkUp}`));
+  atkUpList().forEach((x) => ally.push(up(`攻+${Math.round(x.rate * 100)}% 残${x.turns}`)));
   if (B.critUp > 0) ally.push(up(`会心×${B.critUpMul} 残${B.critUp}`));
   if (B.pAtkDown > 0) ally.push(dn(`攻−${Math.round(B.pAtkDownRate * 100)}% 残${B.pAtkDown}`));
 
@@ -3840,9 +3840,58 @@ function enemyDef() {
   return Math.round(B.e.def * (B.defDown > 0 ? (1 - B.defDownRate) : 1));
 }
 
+function atkUpList() {
+  return (B && B.atkUps ? B.atkUps : []).filter((x) => x.turns > 0);
+}
+function atkUpTotal() {
+  let sum = 0;
+  atkUpList().forEach((x) => { sum += x.rate; });
+  const cap = CONFIG.atkUpMax == null ? 3 : CONFIG.atkUpMax;
+  return Math.min(cap, sum);
+}
+
+function addAtkUp(key, rate, turns, name) {
+  if (!B) return 0;
+  if (!B.atkUps) B.atkUps = [];
+  if (!(rate > 0) || !(turns > 0)) return atkUpTotal();
+  const cur = B.atkUps.filter((x) => x.key === key)[0];
+  if (cur) {
+    cur.rate = Math.max(cur.rate, rate);
+    cur.turns = Math.max(cur.turns, turns);
+    if (name) cur.name = name;
+  } else {
+    B.atkUps.push({ key: key, rate: rate, turns: turns, name: name || '' });
+  }
+  return atkUpTotal();
+}
+
+function keepStronger(turnField, rateField, rate, turns) {
+  if (!(rate > 0) || !(turns > 0)) return B[rateField] || 0;
+  if (B[turnField] > 0 && B[rateField] > 0) {
+    B[rateField] = Math.max(B[rateField], rate);
+    B[turnField] = Math.max(B[turnField], turns);
+  } else {
+    B[rateField] = rate;
+    B[turnField] = turns;
+  }
+  return B[rateField];
+}
+
+function nowAt(rate, kept, word) {
+  return kept > rate ? `（現在<span class="dn">${word}−${Math.round(kept * 100)}%</span>）` : '';
+}
+
+function atkUpLog(rate, total) {
+  const one = `味方全員の攻撃力が ${Math.round(rate * 100)}% 上がった`;
+  return atkUpList().length > 1
+    ? `${one}（<span class="up">合計 攻+${Math.round(total * 100)}%</span>）`
+    : one;
+}
+
 function unitAtk(u) {
   let a = u.atk;
-  if (B.atkUp > 0) a *= (1 + B.atkUpRate);
+  const up = atkUpTotal();
+  if (up > 0) a *= (1 + up);
   if (B.pAtkDown > 0) a *= (1 - B.pAtkDownRate);
   const ls = effOf(u, 'lastStand');
   if (ls && u.hp <= u.max / 2) a *= (1 + ls);
@@ -4405,19 +4454,18 @@ function useLost(u, i) {
                         : `味方全員が身をかためた（このターンの被害 ${Math.round(sk.cut * 100)}%減）`);
   }
   if (sk.up > 0) {
-    B.atkUp = sk.turns || 3;
-    B.atkUpRate = sk.up;
-    pushLog(`味方全員の攻撃力が ${Math.round(sk.up * 100)}% 上がった`);
+    const tot = addAtkUp(u.cid + ':lost', sk.up, sk.turns || 3, sk.name);
+    pushLog(atkUpLog(sk.up, tot));
   }
   if (sk.down > 0) {
-    B.defDown = sk.turns || 3;
-    B.defDownRate = sk.down;
-    pushLog(`${B.e.name} の守りが大きく緩んだ（防御−${Math.round(sk.down * 100)}%）`);
+    const kept = keepStronger('defDown', 'defDownRate', sk.down, sk.turns || 3);
+    pushLog(`${B.e.name} の守りが大きく緩んだ（防御−${Math.round(sk.down * 100)}%）`
+      + nowAt(sk.down, kept, '防御'));
   }
   if (sk.atkDown > 0) {
-    B.atkDown = sk.turns || 3;
-    B.atkDownRate = sk.atkDown;
-    pushLog(`${B.e.name} の力が削がれた（攻撃−${Math.round(sk.atkDown * 100)}%）`);
+    const kept = keepStronger('atkDown', 'atkDownRate', sk.atkDown, sk.turns || 3);
+    pushLog(`${B.e.name} の力が削がれた（攻撃−${Math.round(sk.atkDown * 100)}%）`
+      + nowAt(sk.atkDown, kept, '攻撃'));
   }
   if (sk.back > 0) {
     B.rageBack += sk.back;
@@ -4530,19 +4578,19 @@ function useOwn(u, i, done) {
 
     case 'readAhead': {
       const rate = o.rate || 0.25, turns = o.turns || 3;
-      if (B.atkUpRate <= rate) { B.atkUp = turns; B.atkUpRate = rate; }
-      else B.atkUp = Math.max(B.atkUp, turns);
-      pushLog(`<span class="eff">味方全員の攻撃が ${Math.round(rate * 100)}% 上がった</span>`);
+      const tot = addAtkUp(u.cid + ':own', rate, turns, o.name);
+      pushLog(`<span class="eff">味方全員の攻撃が ${Math.round(rate * 100)}% 上がった</span>`
+        + (atkUpList().length > 1 ? `（<span class="up">合計 攻+${Math.round(tot * 100)}%</span>）` : ''));
       break;
     }
 
     case 'aim': {
       const rate = o.rate || 0.35, turns = o.turns || 2;
-      if (B.defDownRate <= rate) { B.defDown = turns; B.defDownRate = rate; }
-      else B.defDown = Math.max(B.defDown, turns);
+      const kept = keepStronger('defDown', 'defDownRate', rate, turns);
       const r = strikeEnemy(u, o.power || 0.6);
       slashFx('slash');
-      pushLog(`<span class="dmg">${r.d}</span>${r.tag}　<span class="eff">敵の守りが ${Math.round(rate * 100)}% 崩れた</span>`);
+      pushLog(`<span class="dmg">${r.d}</span>${r.tag}　<span class="eff">敵の守りが ${Math.round(rate * 100)}% 崩れた</span>`
+        + nowAt(rate, kept, '防御'));
       break;
     }
 
@@ -4690,9 +4738,9 @@ function useSkill(u, i) {
     case 'break': {
       const r = strikeEnemy(u, sk.power);
       slashFx('heavy', 'sky');
-      B.defDown = sk.turns;
-      B.defDownRate = sk.down;
-      pushLog(`<span class="dmg">${r.d}</span>　${B.e.name} の守りが緩んだ${r.tag}`);
+      const kept = keepStronger('defDown', 'defDownRate', sk.down, sk.turns);
+      pushLog(`<span class="dmg">${r.d}</span>　${B.e.name} の守りが緩んだ${r.tag}`
+        + nowAt(sk.down, kept, '防御'));
       break;
     }
     case 'foresee': {
@@ -4707,9 +4755,9 @@ function useSkill(u, i) {
     case 'weaken': {
       const r = strikeEnemy(u, sk.power);
       slashFx('heavy', 'sky');
-      B.atkDown = sk.turns;
-      B.atkDownRate = sk.down;
-      pushLog(`<span class="dmg">${r.d}</span>　${B.e.name} の力が削がれた（攻撃−${Math.round(sk.down * 100)}%）${r.tag}`);
+      const kept = keepStronger('atkDown', 'atkDownRate', sk.down, sk.turns);
+      pushLog(`<span class="dmg">${r.d}</span>　${B.e.name} の力が削がれた（攻撃−${Math.round(sk.down * 100)}%）${r.tag}`
+        + nowAt(sk.down, kept, '攻撃'));
       break;
     }
     case 'refill': {
@@ -4755,9 +4803,8 @@ function useSkill(u, i) {
       break;
     }
     case 'buffAtk': {
-      B.atkUp = sk.turns;
-      B.atkUpRate = sk.up;
-      pushLog(`味方全員の攻撃力が ${Math.round(sk.up * 100)}% 上がった`);
+      const tot = addAtkUp(u.cid + ':skill', sk.up, sk.turns, sk.name);
+      pushLog(atkUpLog(sk.up, tot));
       break;
     }
     case 'revive': {
@@ -5175,7 +5222,10 @@ function execute() {
       B.cover = null;
       B.parry = null;
       B.recording = null;
-      if (B.atkUp > 0) B.atkUp--;
+      if (B.atkUps && B.atkUps.length) {
+        B.atkUps.forEach((x) => { x.turns--; });
+        B.atkUps = B.atkUps.filter((x) => x.turns > 0);
+      }
       if (B.critUp > 0) B.critUp--;
       if (B.defDown > 0) B.defDown--;
       if (B.atkDown > 0) B.atkDown--;
@@ -5430,7 +5480,7 @@ function execute() {
 
             const g = effOf(t.u, 'sealGuard');
             if (g > 0 && Math.random() < Math.min(1, g)) {
-              popUnit(t.i, 'すり抜けた', 'shield');
+
               pushLog(`<b>${t.u.name}</b> は縫い止められなかった`
                     + `（<span class="eff">${effName('sealGuard')}</span>）`);
             } else {

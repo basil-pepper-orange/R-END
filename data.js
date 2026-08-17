@@ -62,6 +62,7 @@ const CONFIG = {
 
   critRate: 0.15,
   critMul:  1.5,
+  atkUpMax: 3,
 
   rageAtkMax: 0.8,
 
