@@ -160,7 +160,25 @@ const MEM_FMT_MAX = 3;
 function memRankBits(fmt) { return fmt >= 2 ? 5 : 4; }
 
 const MEM_KANA = 'あいうえおかきくけこさしすせそたちつてとなにのはひふへほまみむめもやゆよらりるれんがぎぐげござじずぜぞだでどばびぶべぼぱぴぷぺぽ';
+
+const MEM_BITS = 6;
 const MEM_MAX_SHARDS = 32767;
+
+const MEM_ALPHA_EN = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
+
+const MEM_BITS_EN = 5;
+
+function looksJapanese(t) {
+  return /[぀-ヿ㐀-鿿]/.test(String(t || ''));
+}
+
+function memNormalizeEn(t) {
+  let s = String(t || '').toUpperCase();
+  try { s = s.normalize('NFC'); } catch (e) {}
+  s = s.replace(/[^0-9A-Z]/g, '');
+  s = s.replace(/[IL]/g, '1').replace(/O/g, '0').replace(/U/g, 'V');
+  return s;
+}
 
 function BitOut() { this.bits = []; }
 BitOut.prototype.put = function (v, n) {
@@ -319,26 +337,100 @@ function encodeMemory(s) {
 
   o.put(memChecksum(o.bits), 12);
 
-  const bits = o.bits;
-  while (bits.length % 6) bits.push(0);
+  return bitsToWord(o.bits, MEM_KANA, MEM_BITS);
+}
+
+function bitsToWord(srcBits, alpha, width) {
+  const bits = srcBits.slice();
+  while (bits.length % width) bits.push(0);
   let out = '';
-  for (let i = 0; i < bits.length; i += 6) {
+  for (let i = 0; i < bits.length; i += width) {
     let v = 0;
-    for (let k = 0; k < 6; k++) v = (v << 1) | bits[i + k];
-    out += MEM_KANA[v];
+    for (let k = 0; k < width; k++) v = (v << 1) | bits[i + k];
+    out += alpha[v];
   }
   return out;
 }
 
-function decodeMemory(text) {
-  const kana = memInputToKana(text);
-  if (!kana) throw new Error('合言葉が入力されていません');
+function wordToBits(word, alpha, width) {
   const bits = [];
-  for (const ch of kana) {
-    const v = MEM_KANA.indexOf(ch);
+  for (const ch of word) {
+    const v = alpha.indexOf(ch);
     if (v < 0) throw new Error(`「${ch}」は記憶の文字ではありません`);
-    for (let k = 5; k >= 0; k--) bits.push((v >> k) & 1);
+    for (let k = width - 1; k >= 0; k--) bits.push((v >> k) & 1);
   }
+  return bits;
+}
+
+function decodeMemory(text) {
+  const cands = memCandidates(text);
+  if (!cands.length) {
+
+    if (looksJapanese(text)) kanaFromPoem(text); else kanaFromPoemEn(text);
+    throw new Error('合言葉が入力されていません');
+  }
+  let last = null;
+  for (const cand of cands) {
+    try {
+      const s = decodeMemoryFrom(cand);
+      lastMemoryWasEn = !!cand.en;
+      return s;
+    } catch (e) { last = e; }
+  }
+  throw last || new Error('合言葉が読み取れませんでした');
+}
+
+let lastMemoryWasEn = false;
+
+function memCandidates(text) {
+  const list = [];
+  const push = (word, alpha, width, en) => {
+    if (!word) return;
+    if (list.some((c) => c.word === word && c.alpha === alpha)) return;
+    list.push({ word: word, alpha: alpha, width: width, en: !!en });
+  };
+  if (looksJapanese(text)) {
+    const k = memNormalize(text);
+    if (k && [...k].every((ch) => MEM_KANA.indexOf(ch) >= 0)) push(k, MEM_KANA, MEM_BITS, false);
+    try { push(kanaFromPoem(text), MEM_KANA, MEM_BITS, false); } catch (e) {  }
+    return list;
+  }
+  const e = memNormalizeEn(text);
+  if (e && [...e].every((ch) => MEM_ALPHA_EN.indexOf(ch) >= 0)) push(e, MEM_ALPHA_EN, MEM_BITS_EN, true);
+  try { push(kanaFromPoemEn(text), MEM_ALPHA_EN, MEM_BITS_EN, true); } catch (e2) {  }
+  return list;
+}
+
+function kanaFromPoemEn(text) {
+  const T = [EN_POEM_A, EN_POEM_B, EN_POEM_C];
+  let s = String(text || '').toLowerCase();
+  try { s = s.normalize('NFC'); } catch (e) {}
+  s = s.replace(/[,;:"“”'’()（）\[\]|/／—–]/g, ' ');
+  s = s.replace(/\s+/g, ' ').trim();
+
+  let out = '', i = 0, pos = 0;
+  while (i < s.length) {
+    while (s[i] === ' ') i++;
+    if (i >= s.length) break;
+    const tbl = T[pos % 3];
+    let hit = -1, len = 0;
+    for (let v = 0; v < tbl.length; v++) {
+      const w = String(tbl[v]).toLowerCase();
+      if (w.length > len && s.startsWith(w, i)) { hit = v; len = w.length; }
+    }
+    if (hit < 0) throw new Error(`英語の詩の「${s.slice(i, i + 12)}…」のあたりが読み取れません`);
+    out += MEM_ALPHA_EN[hit];
+    i += len;
+    pos++;
+  }
+  return out;
+}
+
+function decodeMemoryFrom(cand) {
+  const c = (cand && cand.word !== undefined) ? cand
+          : { word: cand, alpha: MEM_KANA, width: MEM_BITS, en: false };
+  if (!c.word) throw new Error('合言葉が入力されていません');
+  const bits = wordToBits(c.word, c.alpha, c.width);
   const r = new BitIn(bits);
   const fmt = r.get(4);
   if (fmt < 1 || fmt > MEM_FMT_MAX) throw new Error('この合言葉は形式が違うようです');
@@ -441,9 +533,9 @@ function kanaFromPoem(text) {
 }
 
 function memInputToKana(text) {
-  const k = memNormalize(text);
-  if (k && [...k].every((ch) => MEM_KANA.indexOf(ch) >= 0)) return k;
-  return kanaFromPoem(text);
+  const c = memCandidates(text);
+  if (!c.length) return kanaFromPoem(text);
+  return c[0].word;
 }
 
 function memPretty(k) {
@@ -501,6 +593,7 @@ function importSave(text) {
 
 function awakenMemory(text) {
   let s;
+  lastMemoryWasEn = false;
   try {
     s = decodeMemory(text);
   } catch (e) {
@@ -510,7 +603,9 @@ function awakenMemory(text) {
   const n = Object.keys(s.chars).length;
   const cl = Object.keys(s.cleared || {}).length;
   const rc = (s.records || []).length;
-  if (!confirm(`この記憶を呼び覚ますと、いまの旅は消えて上書きされます。\n\n仲間 ${n} 人 ／ 記憶の欠片 ${s.shards} ／ 撃破 ${cl} 体${rc ? '\n記憶の碑：いちばん新しい1件' : ''}\n\nよろしいですか？`)) return false;
+
+  const fromEn = lastMemoryWasEn ? '\n\n（英語版で書かれた詩を読み取りました）' : '';
+  if (!confirm(`この記憶を呼び覚ますと、いまの旅は消えて上書きされます。\n\n仲間 ${n} 人 ／ 記憶の欠片 ${s.shards} ／ 撃破 ${cl} 体${rc ? '\n記憶の碑：いちばん新しい1件' : ''}${fromEn}\n\nよろしいですか？`)) return false;
 
   s.playerName = S && S.playerName ? S.playerName : '';
   (s.records || []).forEach((r) => { if (!r.n) r.n = (s.playerName || '').slice(0, 12); });
@@ -579,7 +674,7 @@ function openStorageModal(focus) {
     <div class="md__row">
       <button type="button" class="btn btn--sub btn--awaken" id="mem-load">記憶を呼び覚ます</button>
     </div>
-    <div class="memo__note">ひかえておいた詩を、そのまま書き写してください。<br>空白や改行、句読点が混ざっていても大丈夫です。<br>呼び覚ますと、いま遊んでいる旅は上書きされます。</div>
+    <div class="memo__note">ひかえておいた詩を、そのまま書き写してください。<br>空白や改行、句読点が混ざっていても大丈夫です。<br>呼び覚ますと、いま遊んでいる旅は上書きされます。<br><b>英語版（English）で書いた詩も、そのまま読み取れます。</b></div>
 
     <details class="memo__more">
       <summary>この世界のデータは、どこに宿るのか</summary>

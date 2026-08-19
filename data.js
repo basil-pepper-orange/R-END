@@ -62,6 +62,7 @@ const CONFIG = {
 
   critRate: 0.15,
   critMul:  1.5,
+
   atkUpMax: 3,
 
   rageAtkMax: 0.8,
@@ -941,6 +942,39 @@ const POEM_OLD = [
   { 1: 'いのちが', 2: 'うたごえが', 15: 'こだまが', 34: 'のこり火が', 36: 'しるべが', 42: 'ほほえみが', 43: 'まぶたが', 44: 'まぼろしが', 48: 'むかしの声が', 49: '芽ぶきが', 50: 'めぐりが', 59: 'ふるさとが' },
   { 9: 'かたちを変えて', 11: 'くりかえし', 15: 'さかさまに', 17: 'さみしくて', 20: 'すこしずつ', 24: 'たしかめるように', 28: 'とぎれとぎれに', 30: 'なつかしく', 33: 'にぎやかに', 35: 'のぞきこんで', 37: 'はじめてのように', 38: 'はるかに', 43: 'ふりむかずに', 45: 'まぶしくて', 46: 'まぼろしのように', 47: 'みちたりて', 48: '見わたすかぎり', 49: 'むぞうさに', 50: 'めぐりめぐって', 51: 'もういちど', 52: 'やさしく', 54: 'やわらかに' },
   { 0: 'あふれた', 2: 'うたう', 3: 'うまれる', 4: 'えらぶ', 5: 'おしえてくれる', 7: 'かがやく', 8: 'かえってくる', 11: 'きこえる', 13: 'くずれてゆく', 14: 'こたえる', 15: 'ことばになる', 18: 'さめてゆく', 19: 'しずむ', 22: 'すすむ', 27: 'たずねる', 28: '立ちあがる', 29: 'ちいさくうなずく', 31: 'つづいてゆく', 33: 'とどく', 34: 'ともる', 38: 'ねむる', 39: 'のこされた', 40: 'はじまる', 41: '走りだす', 43: 'ひらく', 44: 'ふるえる', 46: 'ほほえむ', 47: 'まっている', 48: 'まわりつづける', 50: 'みちる', 51: 'むかえにきた', 52: 'めざめる', 53: 'もどってくる', 54: 'やすらいでいる', 55: 'やみに溶ける', 56: 'ゆるされる', 57: 'よみがえる', 58: 'わすれない', 59: 'わらっている', 60: 'とけていった', 62: '手をふった', 63: 'めぐりあう' },
+];
+
+const EN_POEM_A = [
+  'The morning', 'A name', 'The ash', 'A flower',
+  'The wind', 'Her voice', 'A road', 'The evening',
+  'A window', 'The river', 'A promise', 'The rain',
+  'His hand', 'A doorway', 'The snow', 'A lantern',
+  'The harbor', 'A footprint', 'The garden', 'A letter',
+  'The bell', 'A season', 'The orchard', 'A stranger',
+  'The hearth', 'A memory', 'The tide', 'A candle',
+  'The threshold', 'A song', 'Tomorrow', 'A shadow',
+];
+
+const EN_POEM_B = [
+  'quietly', 'at dawn', 'slowly', 'again',
+  'without a sound', 'in the dark', 'at last', 'for a while',
+  'by morning', 'even now', 'far away', 'all night',
+  'gently', 'under the ash', 'once more', 'before long',
+  'in the rain', 'between us', 'after all', 'beyond the hill',
+  'every year', 'half asleep', 'in winter', 'without asking',
+  'near the water', 'at the end', 'somehow', 'from memory',
+  'through the door', 'as always', 'little by little', 'until dawn',
+];
+
+const EN_POEM_C = [
+  'returns.', 'remains.', 'burns.', 'waits.',
+  'forgets.', 'remembers.', 'opens.', 'falls.',
+  'rises.', 'holds on.', 'answers.', 'begins.',
+  'fades.', 'keeps watch.', 'carries on.', 'turns back.',
+  'sings.', 'blooms.', 'settles.', 'calls out.',
+  'crosses over.', 'stays.', 'warms.', 'drifts.',
+  'lingers.', 'arrives.', 'lets go.', 'comes home.',
+  'is spoken.', 'goes on.', 'is written down.', 'does not vanish.',
 ];
 
 const TALE_ENEMY = {
