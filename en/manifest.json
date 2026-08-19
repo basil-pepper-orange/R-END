@@ -1,0 +1,16 @@
+{
+  "name": "Remains at the End",
+  "short_name": "Remains",
+  "description": "In a world turning to ash, hold on to the vistas and the people before they fade. A card RPG you can play in your browser.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0d12",
+  "theme_color": "#0b0d12",
+  "lang": "en",
+  "icons": [
+    { "src": "../icons/icon192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "../icons/icon512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

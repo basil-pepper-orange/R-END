@@ -1,0 +1,1966 @@
+const ELEMENTS = {
+  sea:    { key: 'sea',    name: 'Tide', color: '#5aa6d8', strongAgainst: 'flame'  },
+  forest: { key: 'forest', name: 'Leaf', color: '#6cbf7a', strongAgainst: 'sea'    },
+  flame:  { key: 'flame',  name: 'Ember', color: '#e08a5a', strongAgainst: 'forest' },
+
+  void:   { key: 'void',   name: 'Void', color: '#aeb4c2',
+            strongAgainst: ['flame', 'sea', 'forest'] },
+};
+
+const CONFIG = {
+
+  title:    'REMAINS at the END',
+
+  titleSmall: 'at the',
+  titleSub: '— holding the world\u2019s memory in place —',
+
+  charDir: '../images/characters/',
+  landDir: '../images/landscapes/',
+  uiDir:   '../images/ui/',
+
+  bgTitle:      'title.jpg',
+  bgResultWin:  'win.jpg',
+  bgResultLose: 'lose.jpg',
+  bgUiOpacity:  0.38,
+
+  bgTitleOpacity: 1,
+
+  titleAfter: {
+    after: 'e7',
+    bg:    '2title.jpg',
+    bgm:   'home_after.mp3',
+    title: '',
+    sub:   '',
+  },
+
+  helpOnFirst: true,
+
+  copyright: '© 2026 Basil Pepper Orange',
+
+  startShards: 1500,
+  startCharId: 'baldo',
+
+  gachaSkipStartChar: false,
+
+  charGachaEven: true,
+
+  showCharStars: false,
+
+  costCharGacha: 100,
+  costLandGacha: 100,
+
+  multiPull: 10,
+  multiPullCostMul: 1,
+
+  firstClearBonus: 500,
+
+  dupeCharLevelUp: 3,
+  dupeCharShards: 80,
+  dupeLandShards: 80,
+
+  elemWeakMul: 1.5,
+
+  critRate: 0.15,
+  critMul:  1.5,
+
+  atkUpMax: 3,
+
+  rageAtkMax: 0.8,
+
+  partySize: 3,
+
+  lostMinLevel: 6,
+  lostLevelCost: 5,
+  lostHpRate: 0.5,
+
+  maxLevel: 150,
+
+  maxCharRank: 20,
+  charRankBonus: 0.05,
+  charRankStarFrom: 11,
+
+  revealNew: true,
+  revealSkippable: true,
+  revealText: '',
+
+  battleSpeed: 620,
+
+  hitGapMs: 300,
+
+  hitPopStep: { ally: 48, foe: 84 },
+
+  maxLandRank: 5,
+  landRankMul: [1.0, 1.5, 2.1, 2.8, 3.6],
+
+  skillUses: 0,
+
+  dragHoldMs: 300,
+  dragSlopPx: 18,
+
+  grandEntryMs: 1500,
+  grandEntryScale: 2.4,
+
+  grandEntryTextWaitMs: 0,
+  grandEntryTextMs: 3000,
+
+  skillCutMs: 2000,
+
+  lostCutMs: 2600,
+
+  stolenCutMs: 3300,
+
+  dangerRate: 0.5,
+
+  bubble: {
+    on: true,
+    ms: 1700,
+    gap: 4,
+
+    healMin: 0.08,
+
+    pairChance: 0.45,
+    pairDelay: 850,
+
+    idleChance: 0.25,
+    chance: {
+      start: 1, attack: 0.22, weak: 0.5, hurt: 0.35, low: 1,
+      heal: 0.35, allyDown: 1, enemyHalf: 1, win: 1, join: 1,
+    },
+  },
+
+  sfxDir: '../sfx/',
+  bgmDir: '../bgm/',
+
+  recordApi: '',
+  recordMax: 10,
+  shareUrl: '',
+  shareTag: '#RemainsAtTheEnd',
+
+  bgmLevels: [0.08, 0.18, 0.32, 0.50, 0.72],
+  sfxLevels: [0.15, 0.30, 0.50, 0.72, 1.00],
+  defaultBgmLevel: 2,
+  defaultSfxLevel: 2,
+
+  bgm: {
+    home:         'home.mp3',
+    gacha:        'gacha.mp3',
+    tale:         'tale.mp3',
+    battle:       'battle.mp3',
+    battle_pinch: 'battle_pinch.mp3',
+    result:       'result.mp3',
+    lose:         'lose.mp3',
+
+    ending:       'e8_result.mp3',
+    credits:      'e8_result.mp3',
+  },
+
+  bgmBoost: {
+    battle_pinch: 1,
+  },
+
+  bgmFallback: {
+    gacha:        'home',
+    tale:         'home',
+    battle_pinch: 'battle',
+    result:       'home',
+    lose:         'home',
+    ending:       'home',
+    credits:      'home',
+  },
+
+  winFade: { farewellMs: 1500, fadeMs: 1300, holdMs: 250, outMs: 900 },
+
+  bgmFadeMs: 260,
+
+  bgmPauseOnHide: true,
+
+  bgmResumeFadeMs: 400,
+
+  bgmPinchRatio: 0.5,
+
+  bgmPinchLatch: true,
+
+  afterTale: true,
+  afterQuickTurn: 3,
+  afterLongTurn: 15,
+
+  halfBoost: {
+    power: 1.35, ult: 1.25, aoe: 1.20,
+    rate: 1.30, turns: 1, heal: 1.60, rageUp: 1,
+  },
+
+  halfHealFx: { blinkMs: 1000, fillMs: 1300,
+                maxStep: 10000, maxStepMs: 260, maxGrowScale: 1.6 },
+
+  halfCutMs: 3500,
+
+  halfVoiceMs: 2500,
+
+  lostFreeFlashMs: 1800,
+
+  halfBreak: true,
+  halfBreakSkipTurn: true,
+
+  halfBreakDefault: {
+    name: 'It begins to come apart',
+    lines: ['— Not gone yet', 'Coming apart, and standing still'],
+  },
+
+  enemySay: {
+    on: true,
+    fadeMs: 420,
+    holdMs: 3600,
+    gapTurns: 1,
+    hurtRate: 0.05,
+    lowRate: 0.20,
+    turnEvery: 3,
+    max: { hurt: 4, kill: 3, low: 2, win: 1, lose: 1, turn: 4, crit: 2, revive: 2 },
+  },
+
+  toastMs: 2200,
+  toastSkillMs: 4950,
+};
+
+const CHARACTERS_ALL = [
+  { id: 'baldo', elem: 'flame', name: 'Baldo', title: 'the Drunken Veteran', rarity: 3,
+    desc: 'An old soldier who kept fighting before the Collapse and after it. He says the names he still remembers weigh more than his iron arm, and laughs.',
+    base: { hp: 219, atk: 31, def: 21 }, grow: { hp: 19, atk: 2.72, def: 2.01 },
+
+    own: { name: 'Pour', type: 'pour', value: 0.20, sub: 0.15,
+           desc: 'Tips back a chipped cup. Restores 20% of his own HP, and 15% to the weakest ally.',
+           lines: ['Still got some left in me', 'Here. Have one on me'] },
+    skill: { name: 'A Toast', type: 'healAll', heal: 0.60,
+             desc: 'Raises the chipped cup. Restores 60% of max HP to every ally.',
+             lines: ['I am not done drinking. Stay with me', 'A toast. Only the living get a cup'] },
+
+    lost: { name: 'Last Call', type: 'oath', power: 10.0, healAll: 1.00, reviveAll: true, reviveRate: 0.40,
+            desc: 'He puts the drink down, and the old soldier surfaces. Damage equal to 10× his attack. All allies are fully healed, and the fallen rise again at 40% HP.',
+            lines: ['This is what it looks like when I stop drinking', 'I am giving up the drink — for a better one later!'] },
+  },
+
+  { id: 'alvis', elem: 'sea', name: 'Alvis', title: 'the White-Armored Automaton', rarity: 3,
+    desc: 'There is no face beneath the visor. The voice that ordered him to protect fell silent long ago, yet that single line of it survives intact.',
+    base: { hp: 329, atk: 28, def: 29 }, grow: { hp: 29, atk: 2.24, def: 2.74 },
+
+    own: { name: 'Cover', type: 'cover', value: 0.40,
+           desc: 'Steps forward and takes a single-target attack meant for an ally. He takes 40% less from it.',
+           lines: ['Moving forward', 'Stand back'] },
+    skill: { name: 'Bulwark', type: 'guardAll', cut: 0.85,
+             desc: 'Steps out and sets the shield. This turn, all allies take 85% less damage.',
+             lines: ['Barrier deployed. Stand back', 'This position will not be given up'] },
+
+    lost: { name: 'Shield Strike', type: 'oath', power: 15.0, atkDown: 0.50, turns: 3,
+            desc: 'For the first time, the shield he carried only to protect is swung. Damage equal to 15× his attack. Lowers the enemy’s attack by 50% for 3 turns.',
+            lines: ['Shielding alone will no longer shield them', '— Rewriting the order. By my own hand'] },
+  },
+
+  { id: 'rita', elem: 'flame', name: 'Rita', title: 'the Bare-Fisted Fighter', rarity: 2,
+    desc: 'She carries no weapon. A fist can choose what it breaks.',
+    base: { hp: 216, atk: 31, def: 18 }, grow: { hp: 16, atk: 2.72, def: 1.84 },
+
+    own: { name: 'Flurry', type: 'rush', power: 0.45, hits: 2, weakHits: 3,
+           desc: 'Two quick punches. Three against an element she is strong against.',
+           lines: ['There — keep it coming!', 'Not done yet! Here I go!'] },
+    skill: { name: 'Core Break', type: 'break', power: 5, down: 0.50, turns: 3,
+             desc: 'A clean shot straight through the weak point. Damage equal to 5× her attack. Lowers the enemy’s defense by 50% for 3 turns.',
+             lines: ['Right there. Wide open', 'See that? It is staggering!'] },
+
+    lost: { name: 'Shatterfist', type: 'oath', power: 9.0, hits: 2, down: 0.60, turns: 2,
+            desc: 'She steps in knowing her fists will break. Damage equal to 9× her attack, twice. Lowers the enemy’s defense by 60% for 2 turns.',
+            lines: ['Then let us break together!', 'Both hands. That will be enough'] },
+  },
+
+  { id: 'gold', elem: 'flame', name: 'Goldo', title: 'the Iron Giant of the Sands', rarity: 3,
+    desc: 'A guardian machine dug out of the sand. Whose order he is waiting for, even he no longer remembers.',
+    base: { hp: 323, atk: 43, def: 19 }, grow: { hp: 23, atk: 3.61, def: 1.83 },
+
+    own: { name: 'Brace', type: 'charge', power: 2.4, back: 1,
+           desc: 'He does not move this turn. His next basic strike deals 2.4× damage, and the enemy’s Collapse is pushed back one turn.',
+           lines: ['Charging', 'The next one breaks it'] },
+    skill: { name: 'Hammerfall', type: 'strike', power: 7.8,
+             desc: 'His whole weight comes down with the blow. Damage equal to 7.8× his attack.',
+             lines: ['...Removal. Commencing', 'Executing the order'] },
+
+    lost: { name: 'Core Release', type: 'oath', power: 22.0, selfSeal: 1,
+            desc: 'Every last degree left in the reactor is routed into his right arm. Damage equal to 22× his attack. He cannot act next turn.',
+            lines: ['No order needed. This one I chose', '...Whether I move again has not been calculated'] },
+  },
+
+  { id: 'shion', elem: 'forest', name: 'Shion', title: 'the Scout of the Wind', rarity: 4,
+    desc: 'She goes past the horizon before anyone else does, and comes back at a run to tell you everything she saw, at the top of her voice.',
+    base: { hp: 213, atk: 29, def: 18 }, grow: { hp: 13, atk: 2.26, def: 1.64 },
+
+    own: { name: 'Heads Up', type: 'readAhead', rate: 0.50, turns: 2,
+           desc: 'She reads the next move and calls it out. All allies gain 50% attack for 2 turns.',
+           lines: ['I see it — over there!', 'Okay, I will go look'] },
+    skill: { name: 'Read Ahead', type: 'foresee', power: 7, back: 5,
+             desc: 'She reads the next move all the way through. Damage equal to 7× her attack. Pushes the enemy’s Collapse back by 5 turns.',
+             lines: ['Next move — got it!', 'Not that way. This way!'] },
+
+    lost: { name: 'Still Point', type: 'oath', power: 0, healSelf: 1.00, healReserve: 1.00, back: 99,
+            desc: 'She stops running and lets her breath settle. She and one reserve ally are fully healed, and the enemy’s Collapse returns to 0%.',
+            lines: ['Just once, I stop', '...There. Everything is steady now'] },
+  },
+
+  { id: 'hazuki', elem: 'forest', name: 'Hazuki', title: 'the Blade Hidden in Blossom', rarity: 2,
+    desc: 'She wears a flower in her hair so that she will not forget where the drawn blade is meant to return.',
+    base: { hp: 216, atk: 37, def: 15 }, grow: { hp: 16, atk: 3.16, def: 1.36 },
+
+    own: { name: 'Parry', type: 'parry', power: 2.0,
+           desc: 'She does not draw this turn. One single-target attack is read completely, and answered at double force.',
+           lines: ['...I have seen it', 'I shall return it as it came'] },
+    skill: { name: 'Cross Blades', type: 'drain', power: 4.8, heal: 0.45,
+             desc: 'She steps in and meets the edge. Damage equal to 4.8× her attack. She recovers 45% of it as HP.',
+             lines: ['Before the blossom falls', 'One stroke will settle it'] },
+
+    lost: { name: 'Lotus Cut', type: 'oath', power: 15.0, critUp: { mul: 1.5, turns: 2 },
+            desc: 'She throws away the flower she treasured, and draws in earnest for the first time. Damage equal to 15× her attack. All allies’ critical rate becomes 1.5× for 2 turns.',
+            lines: ['This blossom had a life too. I will not hold back', '— In one breath, I will cut it through'] },
+  },
+
+  { id: 'reia', elem: 'sea', name: 'Reia', title: 'the Quick-Draw Drifter', rarity: 2,
+    desc: 'Under that hat she is always thinking about the next town. And yet she is still here, with this company.',
+    base: { hp: 213, atk: 26, def: 14 }, grow: { hp: 13, atk: 2.44, def: 1.37 },
+
+    own: { name: 'Mark', type: 'aim', rate: 0.35, turns: 2,
+           desc: 'She points out the soft spot. For 2 turns, all allies ignore 35% of the enemy’s defense.',
+           lines: ['There — it broke! Take the shot', 'Got it! Go!'] },
+    skill: { name: 'Signal Shot', type: 'buffAtk', up: 0.70, turns: 3,
+             desc: 'One round straight up into the sky. All allies gain 70% attack for 3 turns.',
+             lines: ['Heads up, all of you — now!', 'I will be the one who calls it'] },
+
+    lost: { name: 'Point Blank', type: 'oath', power: 10.0, up: 1.00, turns: 3,
+            desc: 'She stops running and fires from arm’s length. Damage equal to 10× her attack. All allies gain 100% attack for 3 turns.',
+            lines: ['I left my running days behind me', 'I go first. I will hold the way out for you'] },
+  },
+
+  { id: 'erna', elem: 'flame', name: 'Erna', title: 'the Witch Who Reads Ash', rarity: 4,
+    desc: 'From the way ash settles, she can tell you what stood there. The lens on her hat is for looking at the underside of the world.',
+    base: { hp: 218, atk: 41, def: 14 }, grow: { hp: 18, atk: 3.63, def: 1.37 },
+
+    own: { name: 'Weave', type: 'chant', power: 1.5,
+           desc: 'She stirs words into the ash. Her next skill lands at 1.5× effect, once.',
+           lines: ['I am weaving it now', 'Burn well for me'] },
+    skill: { name: 'Curseweave', type: 'weaken', power: 3.6, down: 0.55, turns: 3,
+             desc: 'She unpicks the enemy’s strength and threads it anew. Damage equal to 3.6× her attack. Lowers the enemy’s attack by 55% for 3 turns.',
+             lines: ['Let me see what you are made of', 'Ash does not lie'] },
+
+    lost: { name: 'Ashfire', type: 'oath', power: 10.0, burn: { rate: 0.05, turns: 3 },
+            desc: 'She turns every grain of ash around her into fire and scatters it. Damage equal to 10× her attack. Burns 5% of the enemy’s max HP each turn for 3 turns.',
+            lines: ['This is how ash ends. Let me show you', 'Be taken by the fire. Fate has already said so'] },
+  },
+
+  { id: 'owen', elem: 'forest', name: 'Owen', title: 'the Last Librarian', rarity: 3,
+    desc: 'In a library no one came to anymore, he went on turning pages alone. Until he finishes a book, the world inside it does not disappear.',
+    base: { hp: 220, atk: 27, def: 21 }, grow: { hp: 20, atk: 2.25, def: 2.01 },
+
+    own: { name: 'Record', type: 'record', power: 0.5, value: 0.35,
+           desc: 'He writes down the move the enemy used this turn. From then on, that move deals 35% less to the party.',
+           lines: ['Writing it down', 'Recording'] },
+    skill: { name: 'Turn a Page', type: 'refill', amount: 2,
+             desc: 'He reminds them of a skill half forgotten. Every ally but himself regains 2 skill uses.',
+             lines: ['A story always has more of itself left', 'You will remember. Your hands already do'] },
+
+    lost: { name: 'Bound Beast', type: 'oath', power: 20.0, refillAll: 99,
+            desc: 'He tears a summoning book of which no second copy exists, and calls the beast out. Damage equal to 20× his attack. All allies’ skill uses are fully restored.',
+            lines: ['That was a rare volume. Someone will pay for it', '— Come out, then. Let me show you what a book can do'] },
+  },
+
+  { id: 'muse', elem: 'sea', name: 'Muse', title: 'the Traveling Apothecary', rarity: 4,
+    desc: 'Nobody but her knows what is in the bottles at her belt. Everybody knows that they work.',
+    base: { hp: 222, atk: 26, def: 24 }, grow: { hp: 22, atk: 2.26, def: 2.28 },
+
+    own: { name: 'Tend', type: 'cure', value: 0.20,
+           desc: 'Heals the weakest ally by 20% and frees them if they cannot move.',
+           lines: ['Hold still', 'You are all right now'] },
+    skill: { name: 'Breathe', type: 'revive', hp: 1.00, heal: 0.36,
+             desc: 'She sets a bottle to a fallen ally’s lips. They rise at full HP. If none have fallen, all allies recover 36%.',
+             lines: ['There now. This is not over yet', 'Open up. It works, I promise'] },
+
+    lost: { name: 'Clearance', type: 'oath', power: 0, healAll: 0.80, reviveAll: true, reviveRate: 0.60, refillAll: 1,
+            desc: 'She empties every bottle she has. All allies, the fallen included, return to 80% HP and regain one skill use.',
+            lines: ['That is me closed for the day', '...Take all of it. Go on'] },
+  },
+
+  { id: 'raizu', elem: 'sea', name: 'Raize', title: 'the Gambler of One Throw', rarity: 4,
+    desc: 'In the card room of a sinking ship, she was the one who never laid her hand face down. Every ring on her fingers was won, and she does not seem inclined to sell a single one.',
+    base: { hp: 218, atk: 29, def: 17 }, grow: { hp: 18, atk: 2.64, def: 1.65 },
+
+    own: { name: 'Wager', type: 'bet', rate: 0.60, power: 5.0, step: 0.5, cap: 10, hurt: 0.12,
+           desc: 'She lets luck take the bet. A 60% chance of damage equal to 5× her attack, rising by 0.5× each time it lands, up to 10×. On a miss she loses 12% of max HP and the streak returns to zero.',
+           lines: ['There. The bet is placed', 'I am in'] },
+    skill: { name: 'Sleight', type: 'silence', power: 6, turns: 2,
+             desc: 'Damage equal to 6× her attack. For 2 turns the enemy cannot use its own moves.',
+             lines: ['I have had a look at your hand', 'Oh — that card is not there anymore'] },
+
+    lost: { name: 'All In', type: 'oath', gamble: 0.60, power: 38.0, silence: 5, healSelf: 1.00,
+            desc: 'Rings and every coin she has go onto the table. A 60% chance of damage equal to 38× her attack, sealing the enemy’s own moves for 5 turns, and full HP for herself. On a miss, nothing happens at all.',
+            lines: ['I am not folding. I never learned how', '— Everything rides on this one'] },
+  },
+
+  { id: 'kain', elem: 'forest', name: 'Kain', title: 'the Hunter Who Gathers Arrows', rarity: 3,
+    desc: 'Every arrow he looses, he goes back for. “If the same arrow will do, then it will do” is the thing he always says, and a broken fletching is mended by morning.',
+    base: { hp: 217, atk: 31, def: 17 }, grow: { hp: 17, atk: 2.72, def: 1.75 },
+
+    own: { name: 'Gather', type: 'salvage', value: 3, power: 0.8,
+           desc: 'He gathers the arrows he loosed and binds them again. He regains 3 skill uses, with no limit on how often. If there is nothing to regain, he shoots for 0.8× his attack.',
+           lines: ['Still good', 'I will go get them'] },
+
+    skill: { name: 'Three Shots', type: 'multi', power: 1.3, hits: 3, critRate: 0.80,
+             desc: 'Three arrows in succession at 1.3× his attack. Each has an 80% chance to strike true.',
+             lines: ['They will land, so three will be enough', 'Three in a row, and not one of them misses'] },
+
+    lost: { name: 'Eight Arrows', type: 'oath', power: 3.0, hits: 8, critUp: { mul: 2, turns: 3 },
+            desc: 'Arrows he has decided not to gather, loosed one after another. Damage equal to 3× his attack, eight times. All allies’ critical rate is doubled for 3 turns.',
+            lines: ['These eight, I am not going back for', '— The line is open'] },
+  },
+
+];
+
+const CHARACTERS = CHARACTERS_ALL.filter((c) => !c.wip);
+
+const LANDSCAPES = [
+  { id: 'l01', file: '01.jpg', name: 'Moss-Grown Brook',     rarity: 1, bonus: { hp: 25, atk: 3,  def: 2 },
+    eff: { type: 'regen',       value: 40   } },
+  { id: 'l02', file: '02.jpg', name: 'Palms and White Shore',   rarity: 1, bonus: { hp: 25, atk: 4,  def: 1 },
+    eff: { type: 'recall',      value: 0.10 } },
+  { id: 'l03', file: '03.jpg', name: 'Shallows of Dappled Light', rarity: 1, bonus: { hp: 30, atk: 3,  def: 2 },
+    eff: { type: 'healParty',   value: 0.04 } },
+  { id: 'l04', file: '04.jpg', name: 'The House on the Hill',     rarity: 2, bonus: { hp: 55, atk: 6,  def: 4 },
+    eff: { type: 'guardOthers', value: 0.08 } },
+  { id: 'l05', file: '05.jpg', name: 'The Great Beast of the Crags',     rarity: 3, bonus: { hp: 70, atk: 12, def: 6 },
+    eff: { type: 'pursuit',     value: 0.35 } },
+  { id: 'l06', file: '06.jpg', name: 'The Shallow Sea',       rarity: 2, bonus: { hp: 60, atk: 5,  def: 5 },
+    eff: { type: 'shield',      value: 0.08 } },
+  { id: 'l07', file: '07.jpg', name: 'Clear Water Between Stones',     rarity: 1, bonus: { hp: 28, atk: 3,  def: 3 },
+    eff: { type: 'revive',      value: 0.20 } },
+
+  { id: 'l08', file: '08.jpg', name: 'The Green Falls',         rarity: 3, bonus: { hp: 85, atk: 9,  def: 9 },
+    eff: { type: 'thorns',      value: 0.10 } },
+  { id: 'l09', file: '09.jpg', name: 'Terrace in Summer Light',   rarity: 2, bonus: { hp: 50, atk: 7,  def: 4 },
+    eff: { type: 'elemBoost',   value: 0.10 } },
+  { id: 'l10', file: '10.jpg', name: 'The Bench in the Valley', rarity: 2, bonus: { hp: 58, atk: 6,  def: 4 },
+    eff: { type: 'lastStand',   value: 0.12 } },
+
+  { id: 'l11', file: '11.jpg', name: 'Spire Under Stars',   rarity: 3, bonus: { hp: 65, atk: 11, def: 5 },
+    eff: { type: 'critRate',    value: 0.05 } },
+  { id: 'l12', file: '12.jpg', name: 'Valley of Swallowtails',       rarity: 2, bonus: { hp: 54, atk: 5,  def: 6 },
+    eff: { type: 'sealGuard',   value: 0.20 } },
+];
+
+const LAND_EFFECTS = {
+  regen:       { name: 'Brookwater',   text: (v) => `Recovers <b>${Math.round(v)}</b> HP each turn` },
+  recall:      { name: 'Sea Breath', text: (v) => `Each turn, a <b>${Math.round(v * 100)}%</b> chance to regain one skill use` },
+  healParty:   { name: 'Dappled Light',     text: (v) => `Each turn, every ally recovers <b>${Math.round(v * 100)}%</b> of max HP` },
+  guardOthers: { name: 'A House to Guard',     text: (v) => `Raises the defense of <b>every ally but the bearer</b> by <b>${Math.round(v * 100)}%</b>` },
+  pursuit:     { name: 'Follow-Through',         text: (v) => `After a strike or skill, follows through at <b>${v.toFixed(2)}×</b> attack` },
+  shield:      { name: 'Shallow Water',   text: (v) => `At the start of battle, raises a shield worth <b>${Math.round(v * 100)}%</b> of max HP` },
+
+  oathCost:    { name: 'A Lighter Oath',   text: (v) => `A Lost Art costs <b>${Math.floor(v)}</b> fewer levels` },
+  revive:      { name: 'Clear Water',   text: (v) => `On falling, rises again at <b>${Math.round(v * 100)}%</b> of max HP — <b>once per battle</b>` },
+  thorns:      { name: 'The Falls Return It',     text: (v) => `When struck, returns <b>${Math.round(v * 100)}%</b> of the damage` },
+  elemBoost:   { name: 'Summer Sun',       text: (v) => `Adds <b>+${v.toFixed(2)}</b> to the multiplier when the element is favorable` },
+  lastStand:   { name: 'A Place to Return To',     text: (v) => `While below half HP, attack rises by <b>${Math.round(v * 100)}%</b>` },
+
+  critRate:    { name: 'Falling Star',       text: (v) => `Raises the bearer’s critical rate by <b>+${Math.round(v * 100)}%</b>` },
+  sealGuard:   { name: 'Light of Wing',     text: (v) => `A <b>${Math.round(v * 100)}%</b> chance of not being pinned down` },
+};
+
+const GACHA_RATE = {
+  char: { 4: 8,  3: 27, 2: 65 },
+  land: { 3: 12, 2: 33, 1: 55 },
+};
+
+const ENEMIES_ALL = [
+  {
+    id: 'e1', elem: 'forest', name: 'The Horned Remains', label: 'The Wandering',
+    story: 'A thin path showed itself through the settled ash. At the end of it stood the great gate of a forest no one remembers.',
+    desc: 'Someone who lost their memory, gathered dead branches for antlers, and wore them. What the flower at their feet means is beyond them now.',
+    hp: 1000, atk: 24, def: 8, aoeEvery: 0, rage: 0,
+    reward: { exp: 50, shards: 1000 },
+    color: '#8a7d63', image: '../images/enemies/e1.jpg',
+    entryLines: ['...Who is that? Give it back. ...My memory', 'What it was that I lost... I cannot remember'],
+
+    half: { name: 'Taken by the Collapse', lines: ['There is nothing left of me. ...Nothing', 'You will come over here too. All of you'] },
+    skills: [
+      { name: 'Sweep of Horns', kind: 'single', power: 1.7, every: 3,
+        lines: ['...Who was it that took it', '...Come over here. To me'] },
+      { name: 'Scattering Branches', kind: 'aoe', power: 0.75, every: 5,
+        lines: ['Tell me what it is I have lost', 'I cannot... remember anymore'] },
+    ],
+  },
+  {
+    id: 'e2', elem: 'sea', name: 'Warden of the White Beast', label: 'The Warden',
+    story: 'The warden fell silent, and the white beast went back into the forest.<br>The way is open.',
+    desc: 'He keeps the gate of the forgotten forest, and the white beast keeps it with him. Above all, he hates to hear his name spoken.',
+    hp: 5000, atk: 62, def: 24, aoeEvery: 4, rage: 0.12,
+    reward: { exp: 200, shards: 1200 },
+    color: '#9aa78c', image: '../images/enemies/e2.jpg',
+    entryLines: ['Do not speak that name', 'Past here, no one goes'],
+
+    half: { name: 'The Chain Groans', lines: ['The gate. It is groaning', 'I said fall back'] },
+    skills: [
+      { name: 'Loose the Beast', kind: 'aoe', power: 0.95, every: 5,
+        lines: ['What lies beyond is asleep already', '— Fall back'] },
+      { name: 'Pinned by Fangs', kind: 'single', power: 1.25, every: 3,
+        seal: { turns: 1 },
+        lines: ['The rest of you will watch from there', 'There. Do not move'] },
+      { name: 'Rouse the Beast', kind: 'none', power: 0, every: 4,
+        selfAtkUp: { rate: 0.35, turns: 3 },
+        lines: ['Up now, White. There is work', 'Not yet. Not nearly enough'] },
+    ],
+    ult: { name: 'Unchain the White', power: 2.0,
+           lines: ['Devour them, White', 'This is as far as it goes. The gate does not open'] },
+  },
+  {
+    id: 'e3', elem: 'flame', name: 'The Faceless Priest', label: 'The Priest',
+    story: 'The prayer broke off. Still, there are those who would rather not be remembered.',
+    desc: 'One charged with seeing the world’s end through to its finish. The words of the prayer stand in place of a face.',
+    hp: 7000, atk: 100, def: 38, aoeEvery: 3, rage: 0.13,
+    reward: { exp: 400, shards: 1500 },
+    color: '#8f86c4', image: '../images/enemies/e3.jpg',
+    entryLines: ['You have come a long way. You may rest now', 'Too much time has passed for remembering'],
+
+    half: { name: 'The Prayer Believes', lines: ['The prayer alone leads us', '...Then we shall come to you'] },
+    skills: [
+      { name: 'Prayer for the End', kind: 'aoe', power: 0.80, every: 4,
+        atkDown: { rate: 0.15, turns: 2 },
+        lines: ['Be at peace. Forget all of it', 'The prayer does not forget'] },
+      { name: 'Enforced Silence', kind: 'single', power: 0.60, every: 5,
+        seal: { turns: 2 },
+        lines: ['Now. Close your mouths', 'It is the hour of prayer'] },
+      { name: 'Hasten the End', kind: 'none', power: 0, every: 3,
+        rageUp: 3,
+        lines: ['Let us finish quickly', 'Is there a reason to wait?'] },
+    ],
+    ult: { name: 'Choir of the End', power: 2.1,
+           lines: ['Come. Let us all sleep together!', 'The hour has come. Pray, all of you!'] },
+  },
+  {
+    id: 'e4', elem: 'sea', name: 'The White-Crowned Saint', label: 'White Crown',
+    story: 'The white crown fell. Beyond it, a beast of bones is guarding the end of the world.',
+    desc: 'One who once led the world. Swallowed by the ash, she paints over every vista her eyes fall upon, one by one.',
+    hp: 8000, atk: 200, def: 60, aoeEvery: 3, rage: 0.13,
+    reward: { exp: 700, shards: 2000 },
+    color: '#d8cfae', image: '../images/enemies/e4.jpg',
+    entryLines: ['More color again, I see', 'That is not a thing you may carry out of here'],
+
+    half: { name: 'The White Runs', lines: ['The colors — they are mixing. Stop it', 'You are all a little too bright'] },
+    skills: [
+      { name: 'Blessing of White', kind: 'single', power: 1.9, every: 4, selfHeal: 0.03,
+        lines: ['Let us make it all white, and forget', 'Sleep now. The white remembers everything'] },
+      { name: 'White Renewal', kind: 'none', power: 0, every: 5, selfHeal: 0.10,
+        lines: ['Wounds can simply be painted over', 'Let us begin again from white'] },
+      { name: 'Twofold Judgment', kind: 'single', power: 1.10, every: 3, twice: true,
+        lines: ['Once was not enough for you, I see', 'I shall paint you white'] },
+    ],
+    ult: { name: 'Return to White', power: 2.2,
+           lines: ['This color is a mistake as well. White, then', 'Come home now. The white will welcome you'] },
+  },
+  {
+    id: 'e5', elem: 'flame', name: 'Heir to the Bones', label: 'The Heir',
+    story: 'The great bones came down. Wind moved through, and a little of what lay past the horizon could be seen.',
+    desc: 'A soldier who fought to the very last when the Collapse came. He walks now with a giant’s bones, guarding the shape of the world’s end.',
+    hp: 12000, atk: 380, def: 84, aoeEvery: 2, rage: 0.14,
+    reward: { exp: 1500, shards: 2200 },
+    color: '#c8b48e', image: '../images/enemies/e5.jpg',
+    entryLines: ['This is the last of it. Turn back', 'The bones do not sleep yet'],
+
+    half: { name: 'The Bones Grind', lines: ['The bones are awake. There is no turning back now', '...So be it. Come at me harder'] },
+    skills: [
+      { name: 'Jaws of the Giant', kind: 'aoe', power: 1.10, every: 4,
+        lines: ['Tear them apart! Go down with the rest!', 'That is right — this is where the world ends!'] },
+      { name: 'Stir the Bones', kind: 'none', power: 0, every: 3,
+        selfAtkUp: { rate: 0.40, turns: 3 }, rageUp: 2,
+        lines: ['Feeding time. Get up', 'Show them the end of the world'] },
+      { name: 'Twin Bone Spears', kind: 'single', power: 1.00, every: 5, twice: true,
+        seal: { turns: 1 },
+        lines: ['You cannot dodge it. This is the world’s own will', 'Fall and be done!'] },
+    ],
+    ult: { name: 'Blow at the World’s End', power: 2.3,
+           lines: ['Let it all end here', 'Bones — leave nothing!'] },
+  },
+
+  {
+    id: 'e6', elem: 'forest', name: 'The King Who Did Not Forget', label: 'The Crowning',
+    story: 'They heard the name of the kingdom at the end of things. One name that no one calls anymore, carried home and remembered.',
+    desc: 'A king who, when the Collapse came, alone refused to let anything go. His subjects and his castle returned to ash, and still the crowning does not end. On the single point of remembering, he bears down on you with all his weight.',
+    hp: 20000, atk: 1725, def: 235, aoeEvery: 3, rage: 0.11,
+    reward: { exp: 4000, shards: 3000 },
+    color: '#8a9a72', image: '../images/enemies/e6.jpg',
+
+    bgm: { battle: 'e6_battle.mp3', battle_pinch: 'e6_battle_pinch.mp3' },
+    entryLines: ['We have forgotten nothing', 'Give us your name. We shall keep it'],
+
+    read: { rate: 0.30, same: 0.10 },
+
+    half: { name: 'He Calls the Kingdom’s Name', lines: ['There. The name is still here. The memory is still here', 'So long as we remember it, the kingdom is'] },
+    skills: [
+      { name: 'Weight of the Crown', kind: 'aoe', power: 1.15, every: 4,
+        atkDown: { rate: 0.40, turns: 2 },
+        lines: ['Heavy, is it not. We have borne this for sixty years', 'What you carry and what we carry are not the same weight'] },
+      { name: 'Command of Fealty', kind: 'single', power: 1.50, every: 5, twice: true,
+        seal: { turns: 2 },
+        lines: ['Kneel. We shall not say it twice', 'We grant it. Put your head to the ground'] },
+      { name: 'A King’s Memory', kind: 'none', power: 0, every: 7,
+        selfAtkUp: { rate: 0.30, turns: 4 }, rageUp: 2, selfHeal: 0.04,
+        lines: ['We remember still the voices of the people on that day', 'Forget the names of our subjects? Never'] },
+    ],
+    ult: { name: 'Return to Us, Our Kingdom', power: 2.5,
+           lines: ['Return! Our kingdom — return to us, here, now!', 'That day, that sight — once more!'] },
+  },
+
+  {
+    id: 'e7', elem: 'void', name: 'The Root of the Collapse', label: 'Blank Page',
+    grandEntry: true,
+    story: 'To the last, he never wrote down his own name.<br>What he could not erase were the names of those who stopped him.<br>— And still, the ash goes on falling.',
+    desc: 'The man who made the Collapse, which returns the world’s memory to blank paper. If remembering hurts, then let it never have been at all — the Collapse began from that one line. ...And yet the world did not stop forgetting.',
+    hp: 30000, atk: 1900, def: 235, aoeEvery: 3, rage: 0.10,
+
+    atkTimes: 2,
+
+    steal: { count: 2, every: 4 },
+    reward: { exp: 10000, shards: 5000 },
+    color: '#9fa6b6', image: '../images/enemies/e7.jpg',
+
+    bgm: {
+      tale:         'e7_tale.mp3',
+      battle:       'e7_battle.mp3',
+      battle_pinch: 'e7_battle_pinch.mp3',
+      result:       'e7_result.mp3',
+      lose:         'e7_lose.mp3',
+    },
+    entryLines: ['...The lot of you. Do you still remember?', 'I shall make it blank. There is nothing here to fear'],
+
+    half: { name: 'He Tears the Page Out', lines: ['Do not read that. It is a page for erasing', 'There are unnecessary pages left yet'],
+            stealSkill: 1, selfHeal: 0.20 },
+    skills: [
+      { name: 'Back to Blank', kind: 'aoe', power: 1.10, every: 3,
+        atkDown: { rate: 0.35, turns: 2 },
+        lines: ['Let this part have gone unwritten', 'The blank is far the more beautiful of the two'] },
+      { name: 'Erase the Page', kind: 'single', power: 1.60, every: 4, twice: true,
+        seal: { turns: 2 },
+        lines: ['Your page ends its existence here', 'The name, the companions — I shall erase them all'] },
+      { name: 'A Second Reading', kind: 'none', power: 0, every: 5,
+        selfAtkUp: { rate: 0.30, turns: 3 }, rageUp: 2, selfHeal: 0.05,
+        lines: ['...It is well written. Allow me to erase it', 'Your story. I shall read it once, at the end'] },
+    ],
+    ult: { name: 'The Collapse Spreads', power: 2.60,
+           lines: ['Erase all of it, as though it never was', 'You need not fear forgetting. There was nothing there'] },
+  },
+
+  {
+    id: 'e8', elem: 'void', name: 'The Ash of Memory', label: 'Weathering',
+    grandEntry: true,
+
+    ending: true,
+    story: 'The rate at which the ash falls has returned to the rate at which a life is lived.<br>The years already gone do not come back.<br>But from here, the forgetting will take time —<br>time with a familiar weight to it, time you can feel in the hand.',
+    desc: 'The thing that was speeding up memory’s own timeline, the one the world forgets along. The name of a flower, the name of a town, the face of the person beside you — all of it thinning faster than it can be held. The world went to ash because this went on falling. It was far too large a thing to stand against, and they reached it anyway. Against this one alone, you fight the passing years at the same time as the HP.',
+
+    hp: 60000, atk: 3800, def: 500, aoeEvery: 3, rage: 0,
+    reward: { exp: 20000, shards: 8000 },
+    color: '#8d8a86', image: '../images/enemies/e8.jpg',
+
+    forget: {
+      cap: 300,
+
+      perTurn: 25, accel: 0.4,
+
+      pinchMul: 2.5,
+      ownBack: 5, skillBack: 10, lostBack: 20,
+      backYear: 3, backYearMax: 40,
+      ultAt: [120, 240],
+
+      note:      'You lose the moment {cap} years have passed on memory’s timeline',
+      noteHow:   'Signature −{own} yrs / Skill −{skill} yrs / Lost Art −{lost} yrs will push it back',
+      noteToast: 'You lose once {cap} years pass on memory’s timeline. Signature −{own} yrs / Skill −{skill} yrs / Lost Art −{lost} yrs will push it back',
+    },
+
+    bgm: {
+      tale:         'e8_tale.mp3',
+      battle:       'e8_battle.mp3',
+      battle_pinch: 'e8_battle_pinch.mp3',
+      result:       'e8_result.mp3',
+      lose:         'e8_lose.mp3',
+    },
+    entryLines: ['There. That is how it goes — forgotten', 'Your story too. In time, everyone forgets it'],
+
+    half: { name: 'The Ash Deepens',
+            lines: ['Those wounds, too — made never to have been', 'From here, the pace is mine'],
+            selfHeal: 1, years: 15,
+
+            maxHp: 100000,
+
+            healParty: true, refillSkill: true, freeLost: true },
+    skills: [
+      { name: 'Weathering', kind: 'aoe', power: 1.15, every: 3, years: 5,
+        lines: ['See how it thins', 'The shape of a thing goes first'] },
+      { name: 'Thin the Name', kind: 'single', power: 1.70, every: 4, seal: { turns: 2 },
+        lines: ['Soon no one will call that name either', 'The names no one calls are the first to go'] },
+      { name: 'It Settles', kind: 'none', power: 0, every: 5, years: 12,
+        lines: ['There is no need to hurry. I only settle', 'Simply wait. People forget without fail'] },
+    ],
+    ult: { name: 'Everyone Forgets', power: 2.40, years: 20,
+           lines: ['That anything was ever here — that is forgotten too', 'And your story ends in just this way'] },
+  },
+
+  {
+    id: 'e9', wip: true, elem: 'forest', name: '（未定・9体目）', label: '（肩書き）',
+    story: '（この敵を倒したあとに拠点で出る一文）',
+    desc: '（説明文。2文くらい）',
+    hp: 17500, atk: 2000, def: 132, aoeEvery: 2, rage: 0.11,
+    reward: { exp: 10290, shards: 5660 },
+    color: '#8a9c74', image: null,
+    entryLines: ['（登場の台詞1）', '（登場の台詞2）'],
+
+    half: { name: '（未定・崩れはじめ）', lines: ['（半分を切ったときの台詞1）', '（半分を切ったときの台詞2）'] },
+    skills: [
+      { name: '（技1）', kind: 'aoe', power: 1.23, every: 4,
+        lines: ['（台詞1）', '（台詞2）'] },
+      { name: '（技2）', kind: 'single', power: 1.96, every: 3,
+        seal: { turns: 1 },
+        lines: ['（台詞1）', '（台詞2）'] },
+      { name: '（技3）', kind: 'none', power: 0, every: 5,
+        selfAtkUp: { rate: 0.35, turns: 3 },
+        lines: ['（台詞1）', '（台詞2）'] },
+    ],
+    ult: { name: '（超必殺技）', power: 2.4,
+           lines: ['（台詞1）', '（台詞2）'] },
+  },
+
+  {
+    id: 'e10', wip: true, elem: 'flame', name: '（未定・10体目）', label: '（果て）',
+    story: '（この敵を倒したあとに拠点で出る一文）',
+    desc: '（説明文。2文くらい）',
+    hp: 20000, atk: 2900, def: 145, aoeEvery: 3, rage: 0.10,
+    reward: { exp: 6940, shards: 3820 },
+    color: '#b06a6a', image: null,
+    entryLines: ['（登場の台詞1）', '（登場の台詞2）'],
+
+    half: { name: '（未定・崩れはじめ）', lines: ['（半分を切ったときの台詞1）', '（半分を切ったときの台詞2）'] },
+    skills: [
+      { name: '（技1）', kind: 'aoe', power: 1.25, every: 4,
+        lines: ['（台詞1）', '（台詞2）'] },
+      { name: '（技2）', kind: 'single', power: 2.00, every: 3,
+        seal: { turns: 1 },
+        lines: ['（台詞1）', '（台詞2）'] },
+      { name: '（技3）', kind: 'none', power: 0, every: 5,
+        selfAtkUp: { rate: 0.35, turns: 3 },
+        lines: ['（台詞1）', '（台詞2）'] },
+    ],
+    ult: { name: '（超必殺技）', power: 2.5,
+           lines: ['（台詞1）', '（台詞2）'] },
+  },
+
+];
+
+const ENEMIES = ENEMIES_ALL.filter((e) => !e.wip);
+
+const ENEMY_LINES = {
+
+  e1: {
+    hurt: ['...It hurts. It can still hurt', 'Stop. Give it back', 'What is it. What is being taken'],
+    kill: ['Asleep. ...It is quiet now', 'Not moving. Not anymore', 'One fewer'],
+    low:  ['Going out. I am going out', 'But it still hurts', 'Where is it that I am'],
+    win:  ['...Do not go home', 'Stay here. With me', 'I do not want to be alone'],
+    lose: ['The flower... ah. So it was a flower', '...Moth... er', 'My name. My name was'],
+    turn: ['...Who is there', 'Give it back', 'These antlers. They are heavy'],
+    crit: ['...Ah. Ah', 'Breaking. I am breaking'],
+    revive: ['Moving again', 'So it wakes'],
+  },
+
+  e2: {
+    hurt: ['...Well now', 'That one told', 'Not bad'],
+    kill: ['One fewer', 'I said no one passes', 'The gate is far off'],
+    low:  ['The gate does not close yet', 'Falling comes later', 'White — stay standing'],
+    win:  ['Turn back. There is no second time', '...This is as far as it goes', 'The gate stays shut'],
+    lose: ['The gate. It is open', 'Go on. White — do not follow', '...Do not speak the name'],
+    turn: ['Fall back', 'Past here, no one goes', 'White. Stay down'],
+    crit: ['...That went deep', 'To the bone, was it'],
+    revive: ['Standing again', 'Still coming, then'],
+  },
+
+  e3: {
+    hurt: ['A good pain, that', 'You are awake still, I see', 'It disturbs the prayer'],
+    kill: ['One of you has found peace', 'Good night to you', 'Now you may be at ease'],
+    low:  ['The prayer grows thin', '...We may not finish yet', 'One light has gone out'],
+    win:  ['Sleep well now', 'It has grown quiet at last', 'The prayer has been heard'],
+    lose: ['Ah. I have remembered', 'The prayer passes to you', '...I wanted a face'],
+    turn: ['Let us pray', 'It is too late for remembering', 'You may rest now, truly'],
+    crit: ['...A sound escaped me', 'Pain, too, is part of the prayer'],
+    revive: ['I put that one to sleep', 'Why do you come back?'],
+  },
+
+  e4: {
+    hurt: ['That hurts. It has been a long while', 'The color is reaching me', 'You are a rough one'],
+    kill: ['One of them is white again', 'Asleep. That is good', 'Painted over'],
+    low:  ['The white is peeling away', 'I have not finished painting', 'I would rather not open my eyes'],
+    win:  ['There. Quiet, is it not', 'You are happier not remembering', 'Now it stays white'],
+    lose: ['...Your color. I could not erase it', 'Remember, will you. My share as well', 'May I open my eyes, I wonder'],
+    turn: ['More color again, I see', 'That may not be carried out', 'Sleep. I will do the remembering'],
+    crit: ['...Ah. How vivid', 'The white has cracked'],
+    revive: ['I had just painted that', 'You have put the color back?'],
+  },
+
+  e5: {
+    hurt: ['A good blow', 'That rang in the bone', 'Come harder'],
+    kill: ['One down. Next', 'The mourning comes later', 'You did not last to the end'],
+    low:  ['I can still stand', 'The bones do not sleep yet', 'I will not kneel'],
+    win:  ['This is the end of it. I told you', '...You fought well', 'I will cut your name into the bones'],
+    lose: ['...Go on ahead', 'The bones stay here', 'At last. I can sleep'],
+    turn: ['Turn back', 'The bones do not sleep yet', 'This is the end of the world'],
+    crit: ['...That one landed', 'The bone rang'],
+    revive: ['Up again?', 'Stubborn. I like that'],
+  },
+
+  e6: {
+    hurt: ['Good. We shall remember it', 'Pain, too, is a memory of ours', 'We have no need of mercy'],
+    kill: ['We shall have the name', 'One more, kept by us', 'One more subject'],
+    low:  ['The crown has not fallen yet', 'While we do not forget, the kingdom is', '...Heavy. But we shall not set it down'],
+    win:  ['Our subjects grow in number. Not badly done', 'We shall remember you. Consider it a reward', 'The kingdom is, still'],
+    lose: ['We shall speak the kingdom’s name', '...You have it? Then it is well', 'We set down the crown'],
+    turn: ['We have forgotten nothing', 'Give us your name. We shall keep it', 'We remember the voices of the morning market yet'],
+    crit: ['...Well struck', 'The crown rang'],
+    revive: ['So. Returned', 'Not forgotten even in death, then'],
+  },
+
+  e7: {
+    hurt: ['...A slip of the pen', 'That page should have been erased', 'The ink is running'],
+    kill: ['One line, gone', 'Easier now, is it not', 'Nearer to blank paper now'],
+    low:  ['I have not finished writing', 'The blank page is being soiled', 'My hand is shaking'],
+    win:  ['This will do. There is nothing here', 'There is no one left who remembers', 'Quiet. At last'],
+    lose: ['...I forgot to write my name', 'The ash cannot be stopped', 'I believed it could be rewritten'],
+    turn: ['...Do you still remember?', 'Let us rewrite it. From blank paper, this time', 'That page was closed'],
+    crit: ['...That part will not erase', 'It is written deep'],
+    revive: ['That line was erased', 'It was still there?'],
+  },
+
+  e8: {
+    hurt: ['That will be forgotten too', 'Pain does not remain', 'In time it goes'],
+    kill: ['One more, forgotten', 'No one calls it now', 'Lighter now'],
+    low:  ['I do not go out', 'The ash is still falling', 'So long as anyone forgets'],
+    win:  ['There was nothing here', 'There. Forgotten'],
+    lose: ['...To the pace of a life', 'Slowly, then'],
+    turn: ['There — it goes', 'Your story as well', 'It is too fast for the lot of you', 'Can you hold on to it?'],
+    crit: ['You remember well', 'Even that motion of the hand will go'],
+    revive: ['There is still a name?', 'Call them back if you like'],
+  },
+};
+
+const STOLEN_SKILLS = {
+  baldo:  { name: 'Last Call', kind: 'single', power: 1.30, selfHeal: 0.04,
+            lines: ['A drink set aside. Still wet', 'This man’s page had run with drink'] },
+  alvis:  { name: 'Shield Strike', kind: 'single', power: 1.55, atkDown: { rate: 0.30, turns: 2 },
+            lines: ['Iron that has stopped protecting works well', 'The shield had been set down. So I took it up'] },
+  rita:   { name: 'Shatterfist', kind: 'single', power: 1.45, twice: true,
+            lines: ['A fist unafraid of breaking', 'This girl never wrote her pain down'] },
+  gold:   { name: 'Core Release', kind: 'single', power: 2.10,
+            lines: ['The last heat of the iron man. Still warm', 'A fire that waits for no order. Then I shall stoke it'] },
+  shion:  { name: 'Still Point', kind: 'none', power: 0, rageUp: 3, selfAtkUp: { rate: 0.25, turns: 3 },
+            lines: ['Feet that have stopped looking ahead', 'The road this child ran is not gone yet'] },
+  hazuki: { name: 'Lotus Cut', kind: 'single', power: 1.50, selfHeal: 0.05,
+            lines: ['A discarded flower. I made a bookmark of it', 'From the hand that chose not to wear it, I borrow only the speed'] },
+  reia:   { name: 'Point Blank', kind: 'none', power: 0, selfAtkUp: { rate: 0.40, turns: 3 },
+            lines: ['What is left behind may be picked up, surely', 'The way of shooting used by one who closed off her own escape'] },
+  erna:   { name: 'Ashfire', kind: 'aoe', power: 1.05, atkDown: { rate: 0.40, turns: 3 },
+            lines: ['Ash that has stopped being read. Let it scatter', 'This witch stopped reading the end'] },
+  owen:   { name: 'Bound Beast', kind: 'none', power: 0, selfAtkUp: { rate: 0.30, turns: 3 }, rageUp: 2,
+            lines: ['A torn-out page. Gathering it is my work', 'Letters that have lost their writer belong to me'] },
+  muse:   { name: 'Clearance', kind: 'none', power: 0, selfHeal: 0.09,
+            lines: ['Medicine of which she kept no share for herself', 'I remember the motion of emptying the very last bottle'] },
+  raizu:  { name: 'All In', kind: 'single', power: 1.35, seal: { turns: 2 },
+            lines: ['It was left lying on the table. I shall take it', 'The way of betting used by one who never learned to fold'] },
+  kain:   { name: 'Eight Arrows', kind: 'single', power: 0.95, twice: true,
+            lines: ['If he will not gather them, I shall', 'Arrows left behind. They still fly'] },
+};
+
+const BALANCE = {
+
+  damageVariance: 0.10,
+  minDamage: 1,
+
+  aoeRate: 0.70,
+
+  expBase: 30,
+  expStep: 14,
+
+  expRate: 1,
+  shardRate: 1,
+
+  loseRate: 0.25,
+};
+
+const POEM_A = [
+  'The morning', 'A name', 'The ash', 'A flower',
+  'The wind', 'Her voice', 'A road', 'The evening',
+  'A window', 'The river', 'A promise', 'The rain',
+  'His hand', 'A doorway', 'The snow', 'A lantern',
+  'The harbor', 'A footprint', 'The garden', 'A letter',
+  'The bell', 'A season', 'The orchard', 'A stranger',
+  'The hearth', 'A memory', 'The tide', 'A candle',
+  'The threshold', 'A song', 'Tomorrow', 'A shadow',
+];
+
+const POEM_B = [
+  'quietly', 'at dawn', 'slowly', 'again',
+  'without a sound', 'in the dark', 'at last', 'for a while',
+  'by morning', 'even now', 'far away', 'all night',
+  'gently', 'under the ash', 'once more', 'before long',
+  'in the rain', 'between us', 'after all', 'beyond the hill',
+  'every year', 'half asleep', 'in winter', 'without asking',
+  'near the water', 'at the end', 'somehow', 'from memory',
+  'through the door', 'as always', 'little by little', 'until dawn',
+];
+
+const POEM_C = [
+  'returns.', 'remains.', 'burns.', 'waits.',
+  'forgets.', 'remembers.', 'opens.', 'falls.',
+  'rises.', 'holds on.', 'answers.', 'begins.',
+  'fades.', 'keeps watch.', 'carries on.', 'turns back.',
+  'sings.', 'blooms.', 'settles.', 'calls out.',
+  'crosses over.', 'stays.', 'warms.', 'drifts.',
+  'lingers.', 'arrives.', 'lets go.', 'comes home.',
+  'is spoken.', 'goes on.', 'is written down.', 'does not vanish.',
+];
+
+const POEM_OLD = [{}, {}, {}];
+
+const JA_POEM_A = [
+  '明日は', '命が', '歌声が', '枝先が', '遠雷が',
+  '面影が', '影が', '記憶が', '草原が', '傷あとが',
+  '雲間が', '光が', '湖面が', '木漏れ日が', '心が',
+  '木霊が', 'ささやきが', '潮風が', '静けさが', '素足が',
+  '星屑が', '空は', '誰かが', '小さな手が', '月あかりが',
+  '手のひらが', '遠い日が', '灯りが', '涙が', '名前が',
+  '波音が', '匂いが', '願いが', 'まどろみが', '残り火が',
+  '花びらが', '道標が', '火の粉が', 'ひび割れが', '船跡が',
+  '冬の日が', '帆が', '微笑みが', '瞼が', '幻が',
+  '水面が', '道が', '港が', '昔の声が', '芽吹きが',
+  '巡りが', '物語が', '約束が', '夕暮れが', '雪が',
+  '指先が', '夜明けが', '世界が', '呼び声が', '故郷が',
+  '螺旋が', '落葉が', 'わたしが', '忘れられた歌が',
+];
+
+const JA_POEM_B = [
+  '明け方に', 'いつまでも', 'うつむいて', 'うれしくて', '追いかけて',
+  'おそるおそる', '音もなく', 'かすかに', '風のように', '形を変えて',
+  'きらめいて', '繰り返し', '暮れゆく空に', 'ここではないどこかで', 'こらえきれずに',
+  '逆さまに', 'ささやくように', '寂しくて', '静かに', '忍びやかに',
+  '少しずつ', 'すべてを抱いて', 'そっと', '空のむこうで', '確かめるように',
+  '立ちどまって', '誰にも知られず', '遠くで', '途切れ途切れに', '灯をかかげて',
+  '懐かしく', '名もなく', '何度でも', '賑やかに', '眠るように',
+  '覗きこんで', '果てしなく', '初めてのように', '遥かに', '光をあつめて',
+  '一息に', 'ひそやかに', 'ふいに', '振り向かずに', 'まっすぐに',
+  '眩しくて', '幻のように', '満ち足りて', '見渡すかぎり', '無造作に',
+  '巡り巡って', 'もう一度', '優しく', 'やがて', '柔らかに',
+  'ゆっくりと', 'ゆらめいて', '夜ふけに', '世界のはしで', 'わけもなく',
+  '忘れたころに', 'わずかに', '笑いながら', '割れた鏡に',
+];
+
+const JA_POEM_C = [
+  '溢れた', '息をのむ', '歌う', '生まれる', '選ぶ',
+  '教えてくれる', 'おめでとう', '輝く', '帰ってくる', '数えている',
+  '消えた', '聞こえる', 'きらめく', '崩れてゆく', '応える',
+  '言葉になる', '咲いた', 'ささやく', '覚めてゆく', '沈む',
+  '知っている', '過ぎてゆく', '進む', 'ずっとここにいる', '染まる',
+  '空へのぼる', 'たしかにあった', '訪ねる', '立ち上がる', '小さくうなずく',
+  '散っていく', '続いてゆく', '遠ざかる', '届く', '灯る',
+  '泣いていた', '名を呼ぶ', 'にじむ', '眠る', '残された',
+  '始まる', '走り出す', '光る', '開く', '震える',
+  'ほどける', '微笑む', '待っている', '回り続ける', '見つけた',
+  '満ちる', '迎えに来た', '目覚める', '戻ってくる', '安らいでいる',
+  '闇に溶ける', '許される', '蘇る', '忘れない', '笑っている',
+  '溶けていった', '息づいている', '手を振った', '巡りあう',
+];
+
+const JA_POEM_OLD = [
+  { 1: 'いのちが', 2: 'うたごえが', 15: 'こだまが', 34: 'のこり火が', 36: 'しるべが', 42: 'ほほえみが', 43: 'まぶたが', 44: 'まぼろしが', 48: 'むかしの声が', 49: '芽ぶきが', 50: 'めぐりが', 59: 'ふるさとが' },
+  { 9: 'かたちを変えて', 11: 'くりかえし', 15: 'さかさまに', 17: 'さみしくて', 20: 'すこしずつ', 24: 'たしかめるように', 28: 'とぎれとぎれに', 30: 'なつかしく', 33: 'にぎやかに', 35: 'のぞきこんで', 37: 'はじめてのように', 38: 'はるかに', 43: 'ふりむかずに', 45: 'まぶしくて', 46: 'まぼろしのように', 47: 'みちたりて', 48: '見わたすかぎり', 49: 'むぞうさに', 50: 'めぐりめぐって', 51: 'もういちど', 52: 'やさしく', 54: 'やわらかに' },
+  { 0: 'あふれた', 2: 'うたう', 3: 'うまれる', 4: 'えらぶ', 5: 'おしえてくれる', 7: 'かがやく', 8: 'かえってくる', 11: 'きこえる', 13: 'くずれてゆく', 14: 'こたえる', 15: 'ことばになる', 18: 'さめてゆく', 19: 'しずむ', 22: 'すすむ', 27: 'たずねる', 28: '立ちあがる', 29: 'ちいさくうなずく', 31: 'つづいてゆく', 33: 'とどく', 34: 'ともる', 38: 'ねむる', 39: 'のこされた', 40: 'はじまる', 41: '走りだす', 43: 'ひらく', 44: 'ふるえる', 46: 'ほほえむ', 47: 'まっている', 48: 'まわりつづける', 50: 'みちる', 51: 'むかえにきた', 52: 'めざめる', 53: 'もどってくる', 54: 'やすらいでいる', 55: 'やみに溶ける', 56: 'ゆるされる', 57: 'よみがえる', 58: 'わすれない', 59: 'わらっている', 60: 'とけていった', 62: '手をふった', 63: 'めぐりあう' },
+];
+
+const TALE_ENEMY = {
+  e1: {
+    chapter: 'The First Vista', place: 'The Narrow Path of Ash',
+    lead: [
+      'They pushed through the ash, and at the end of the path a shape was standing still.',
+      'Antlers of dead branches. At its feet, one flower whose name has been forgotten is in bloom.',
+    ],
+    ask: '— Give it back. Give it back. What there is to give back, the shape itself no longer remembers.',
+  },
+  e2: {
+    chapter: 'The Second Vista', place: 'The Gate of the Forgotten Forest',
+    lead: [
+      'The gate was under moss, its hinges rusted through long ago. It was shut all the same.',
+      'A white beast raised itself. The one whose hand rested on its back looked at them, quietly.',
+    ],
+    ask: '— Do not speak that name. A name that is spoken gets remembered.',
+  },
+  e3: {
+    chapter: 'The Third Vista', place: 'The Hall Where a Prayer Remains',
+    lead: [
+      'Ash came down through the broken ceiling and hung in the hall like incense.',
+      'The faceless one turned toward them. The strange part was knowing that it had turned.',
+    ],
+    ask: '— You have come far. You may rest now. The tireder the ear, the deeper that voice went in.',
+  },
+  e4: {
+    chapter: 'The Fourth Vista', place: 'The Painted-Over Height',
+    lead: [
+      'From the height, they should have been able to see the vistas they had won back.',
+      'What they saw was white. White laid on carefully, one coat at a time.',
+    ],
+    ask: '— More color again, I see. Her eyes stayed shut, and she smiled as if pleased.',
+  },
+  e5: {
+    chapter: 'The Fifth Vista', place: 'The Bone Field at the World’s End',
+    lead: [
+      'They noticed that the line of the horizon had the shape of a living thing’s spine.',
+      'It was a spine. At the base of it, one soldier was standing.',
+    ],
+    ask: '— This is the last of it. Turn back. It did not sound like a threat. It sounded like advice.',
+  },
+
+  e6: {
+    chapter: 'The Sixth Vista', place: 'The Palace Gone Back to Grass',
+    lead: [
+      'The grass was high. Past the knee, past the waist, and then it became a row of grass in the shape of pillars.',
+      'Beyond them one throne remained. What sat in it had not yet set down the crown.',
+    ],
+    ask: '— We have forgotten nothing. It did not sound like pride. It sounded like a load that cannot be put down.',
+  },
+  e7: {
+    chapter: 'The Seventh Vista', place: 'The Study Where Only a Window Remains',
+    lead: [
+      'No walls, no floor, no ceiling. Only one white window frame, standing in the middle of the sky.',
+      'In front of it a man sat, at the height where a desk should have been, a sheaf of blank paper held on his knees.',
+    ],
+    ask: '— Does remembering matter so much to you? The man looked at them, once.',
+  },
+  e8: {
+    chapter: 'The Eighth Vista', place: 'The Bottom of the Ash',
+    lead: [
+      'There was no path left. Ash to the knee, ash to the waist. With every step, something gave way underfoot with a sound.',
+      'At the center of it nothing was standing. The ash had simply mounded up, in one place, into the shape of a person.',
+      'Here, time comes down along with the ash. Years pass in the space of one breath, and for every year that passes something thins. — What had been happening across the whole world was simply laid bare at this bottom. Let three hundred years settle, and no one will know that anything was fought here.',
+      'Even so, there are ways to push back. A motion only that one person makes, a skill borrowed from a vista, and the blow that costs you something you cared about. — For as long as the body is showing that it remembers, the years give a little ground.',
+    ],
+    ask: '— There. That is how it goes, forgotten. The voice came from nowhere at all, and sounded like something you had thought of yourself.',
+  },
+  e9:  { chapter: '第九景', place: '（場所）', lead: ['（情景1）', '（情景2）'], ask: '（敵が投げかける一文）' },
+  e10: { chapter: '第十景', place: '（場所）', lead: ['（情景1）', '（情景2）'], ask: '（敵が投げかける一文）' },
+};
+
+const CHAR_TALE = {
+  baldo: {
+    e1: { act: 'Pulled the stopper, held a mouthful, and looked down at the flower.', line: 'So that is what forgetting your name looks like. ...I will remember. Yours too' },
+    e2: { act: 'Ran a finger along the rust of the gate and snorted, the way you do at something familiar.', line: 'There used to be a morning market near here. Warden — you queued for it too, I bet' },
+    e3: { act: 'Heard the praying voice and, unusually, put the flask away.', line: '“Rest” is a kind word. That’s what makes it a bad one. I’m not done drinking' },
+    e4: { act: 'Looked at the whited-out horizon and slowly closed the fingers of his iron hand.', line: 'Erasing color, is that leading? The ones I knew who led were clumsier than that' },
+    e5: { act: 'Saw how the soldier was standing, and stopped smiling.', line: '...I know that stance. Hey. Step aside. I’m enough to be the one who stays' },
+    e6: { act: 'Stopped before the throne and held the flask without pulling the stopper.', line: 'You kept it all in mind for sixty years, alone? ...Sorry about that. I’m the sort who drank and forgot' },
+    e7: { act: 'Saw the sheaf of blank paper and left the stopper in the flask.', line: 'Wrote it, then erased it? ...Forgetting by drinking is the more honest of the two' },
+    e8: { act: 'Scooped up ash in one hand and gave it back to the wind.',
+          line: 'So there’s a great many memories in here. ...Sorry. I’m not letting go of mine yet' },
+  },
+  alvis: {
+    e1: { act: 'Brought the shield up and moved half a step forward, into his companions’ line of sight.', line: 'That is no longer a thing that fights. ...Even so, it does not come past me' },
+    e2: { act: 'Halted before the gate and bowed, without drawing.', line: 'I understand what it is to be the one guarding. Understanding it is why I will not step back' },
+    e3: { act: 'Lowered the visor as though shielding the others from the praying voice.', line: 'I will not listen to those words. If I listen, I will not remain standing' },
+    e4: { act: 'Looked up at the white height and took a fresh grip on the rim of the shield.', line: 'Is it the world you are protecting? Or the reason you closed your eyes?' },
+    e5: { act: 'Stepped into the shadow of the great bones and stood in front of the others.', line: 'You mean to stay standing to the last? ...It is time you were relieved' },
+    e6: { act: 'Before the king, he lowered the shield at an angle for the first time.', line: 'The kingdom to protect is gone, and the order remains. ...I know what that costs' },
+    e7: { act: 'Halted beneath the window frame and brought the shield square to the front.', line: 'You erased the thing you were protecting, yourself? ...That is called abandoning the post' },
+    e8: { act: 'Stood knee-deep in the ash and did not move.',
+          line: 'In this ash there are those I failed to protect. We can still speak their names' },
+  },
+  rita: {
+    e1: { act: 'Started to crack her knuckles, and stopped halfway.', line: '...Break it and nothing comes back. That makes this harder than usual' },
+    e2: { act: 'Met the white beast’s eyes and grinned.', line: 'It’s not you who means it, it’s the beast. Fine. I’ll take it' },
+    e3: { act: 'Did not cover her ears, and faced the words of the prayer head on.', line: 'Prayer? That kind of thing ends the moment it gets punched, doesn’t it?' },
+    e4: { act: 'Held a hand up against the painted-over view.', line: 'White. What gets me most is the way it acts like it never broke anything' },
+    e5: { act: 'Looked out over the horizon of bone and took a deep breath.', line: 'Bone is hard. And being hard, it’s obvious where it breaks' },
+    e6: { act: 'Looked up at the crown and let her fists uncurl.', line: 'Wearing something that heavy and still standing. ...Nobody ever told you it gets easier if you take it off' },
+    e7: { act: 'Grabbed one blank sheet, crushed it, and let it go.', line: 'It’s completely blank. I could write my own name on this' },
+    e8: { act: 'Kicked up the ash, and immediately grimaced.',
+          line: 'There’s nothing here to punch. ...But it doesn’t end unless I punch it, does it' },
+  },
+  gold: {
+    e1: { act: 'Halted, and looked for a while at what lay around its feet.', line: '...Target unidentifiable. Classification: formerly human. ...Holding action' },
+    e2: { act: 'Extended an arm as though tracing the structure of the doors.', line: 'This gate was not built to keep things out. ...It was built to keep something in' },
+    e3: { act: 'The light in his chest flickered as the praying voice reached him.', line: 'Shutdown order received. ...Source unknown. Therefore, discarded' },
+    e4: { act: 'Registered the White Crown, and his motion lagged by a single beat.', line: '...On record. Priority: highest. ...Awaiting an order' },
+    e5: { act: 'Began walking straight toward the great bones.', line: '...Did that one go on waiting for an order as well' },
+    e6: { act: 'Advanced to the throne and halted, upright.', line: 'Identifying the source of orders. ...No. Incorrect. You are the one waiting' },
+    e7: { act: 'Halted before the man and dimmed one of the lights in his eyes.', line: 'Identifying the origin of the order. ...These are the coordinates where it began' },
+    e8: { act: 'Measured the depth of the ash by pushing an arm into it.',
+          line: 'Records lost. ...But the record that they were lost remains' },
+  },
+  shion: {
+    e1: { act: 'Ran ahead, came back, and said it while catching her breath.', line: 'The flower is still out! And look — no ash has settled just around it' },
+    e2: { act: 'Came down out of a tree and brushed herself off.', line: 'I went and looked past the gate. ...It’s a forest. A proper one, still green' },
+    e3: { act: 'Circled the outside of the hall once, and then, unusually, lowered her voice.', line: 'I looked for a way out. ...There isn’t a single road leading out of here' },
+    e4: { act: 'Stood at the edge of the height and pointed at the horizon.', line: 'Only the near part is white. There’s still color further out. I saw it properly' },
+    e5: { act: 'Traced the ridge of bone with her eyes, and for once was lost for words.', line: '...Nobody has seen past this yet. So I’ll go and see it first' },
+    e6: { act: 'Ran between the pillars of grass and stopped short in front of the throne.', line: 'There’s still a path here. ...Someone has been walking it, treading the grass down, all this time' },
+    e7: { act: 'Ducked through the window frame and came straight back.', line: 'There isn’t a single road here. ...You erased all of them' },
+    e8: { act: 'Tried to run across the ash, sank, and stopped.',
+          line: 'It’s not that there’s no road here. ...The road was forgotten' },
+  },
+  hazuki: {
+    e1: { act: 'Picked a single flower from the ground and set it in her hair.', line: 'Now I will be able to remember the place where you bloomed' },
+    e2: { act: 'Quietly loosened the blade in its sheath, facing the white beast.', line: 'If you would rather your name were not spoken, we shall finish without speaking it' },
+    e3: { act: 'Lowered her eyes softly, between the lines of the prayer.', line: 'Anyone who can sleep when told to sleep is probably a fortunate person' },
+    e4: { act: 'In all that white, the flower in her hair was the only thing with color.', line: 'Will you paint over this as well? ...That, I shall prevent' },
+    e5: { act: 'Set foot on the bone field and laid a hand on the hilt.', line: 'This is the first soil I have seen where nothing blooms. ...Not even a moment of falling' },
+    e6: { act: 'Found stone steps buried in the grass and bowed there.', line: 'Not one flower is in bloom. ...That is because someone is still keeping it' },
+    e7: { act: 'Squared the blank sheets at her feet and set them at the height where a desk had been.', line: 'Did you erase the names of the flowers as well? ...That is a lonely thing' },
+    e8: { act: 'Drew a single flower stem out of the ash.',
+          line: 'The flower did not last. What I remember is that it was worn' },
+  },
+  reia: {
+    e1: { act: 'Pushed the brim of her hat up and narrowed her eyes.', line: 'Ugh. If that is where it ends up, I would rather just run for it' },
+    e2: { act: 'Tapped the grip of her gun and looked up at the gate.', line: 'What’s the toll? ...Ah. One of those where money isn’t enough' },
+    e3: { act: 'Kept the gun lowered, which was unusual, and watched the priest.', line: 'A voice that makes you sleepy. ...This is the hardest kind to shoot at' },
+    e4: { act: 'Raised the gun at the white horizon once, on empty.', line: 'The next town should be out that way. If it’s been painted over, I won’t stand for it' },
+    e5: { act: 'Checked the cylinder and pulled the hat down over her eyes.', line: 'I don’t like the feel of this. ...Maybe I’ll line up an exit' },
+    e6: { act: 'Took her hat off, and unusually did not put it back on.', line: 'A drifter like me hasn’t got a country to keep in mind. ...Maybe I’m a little envious' },
+    e7: { act: 'Pulled the hat low again and looked straight at the man.', line: 'Traveling light is best, sure. ...But carrying nothing at all isn’t traveling light' },
+    e8: { act: 'Held her hat down and looked back the way they had come.',
+          line: 'The way out is buried in ash. ...First time I’ve seen that' },
+  },
+  erna: {
+    e1: { act: 'Took a pinch of the ash and ground it between her fingertips.', line: 'A great many people stood here. ...And every one of them was forgotten' },
+    e2: { act: 'Peered through her lens at the ash gathered on the gatepost.', line: 'This gate was shut from the inside. He is not guarding. He is shutting himself in' },
+    e3: { act: 'Took off her lens and listened closely to the praying voice.', line: 'Prayer is what ash keeps best of all. ...How many centuries has this one been praying?' },
+    e4: { act: 'Ran a finger down the whited wall and smelled the powder on it.', line: 'This is not simply paint. You mixed ash into it' },
+    e5: { act: 'Read the ash on the bones, and stayed silent for a while.', line: '...These bones are all separate people. And every one of them, he sat with at the end' },
+    e6: { act: 'Pushed through the grass looking for ash, found none, and looked up.', line: 'There is hardly any ash. ...It is not that it would not burn. It is that it could not be forgotten' },
+    e7: { act: 'Reached out for ash, came away with only blank paper, and lowered her hand.', line: 'Not even ash is left. ...You did not burn it. You made it never have been' },
+    e8: { act: 'Took a pinch of ash, and for the first time could not let it go.',
+          line: 'All this ash. ...I wonder whether anyone is left besides the four of us standing here' },
+  },
+  owen: {
+    e1: { act: 'Opened his notebook and began writing down what stood before them.', line: 'It needs a name. I cannot close the page on something nameless' },
+    e2: { act: 'Traced the carving on the gate with a finger and gave a small nod.', line: 'Where have I seen this crest before? This is no ordinary gate' },
+    e3: { act: 'Stopped turning the page as he listened to the liturgy.', line: 'That prayer has more to it. You stopped reading partway through' },
+    e4: { act: 'On the white height, he quietly closed the book he was holding.', line: 'Paint it over and the mistake is gone. ...So is the story' },
+    e5: { act: 'Opened the book slowly, facing the horizon of bone.', line: 'The closing chapter is near, then. ...Do not fear it. There are blank pages after a close as well' },
+    e6: { act: 'Touched a pillar of grass and began counting the row of them.', line: 'Twelve pillars. ...Your kingdom certainly existed' },
+    e7: { act: 'Stopped turning the page and quietly closed the book.', line: 'You and I were doing the same thing. ...The difference is whether we erased it' },
+    e8: { act: 'Opened the book, and closed it with a sigh.',
+          line: 'The pages are going blank. ...Even here, in my own hands, it is being forgotten' },
+  },
+  muse: {
+    e1: { act: 'Took a step toward it, and was pulled back by the others.', line: '...I thought, maybe I could fix it. Sorry. Bad habit of the trade' },
+    e2: { act: 'Listened to the white beast’s breathing from a distance.', line: 'That one is holding back pain. Warden — have you noticed?' },
+    e3: { act: 'Gripped a bottle and did not turn her ear away from the priest’s voice.', line: 'Putting people to sleep is what I am good at. Waking them is far harder' },
+    e4: { act: 'In that white world, the bottles at her belt were the only vivid thing.', line: 'Give the color back. ...Those people are still in pain, aren’t they' },
+    e5: { act: 'Looked at the soldier of bones and quietly drew a stopper.', line: 'This works on you too. ...You have not rested in a very long time, have you' },
+    e6: { act: 'Saw the tremor in the king’s fingertips and gripped a bottle tightly.', line: 'You have been awake this whole time, haven’t you. ...Sixty years of it. That is an illness by now' },
+    e7: { act: 'Saw the tremor in the man’s hand and gripped a bottle.', line: 'That is the hand of someone who has been writing for a very long time. ...That does not heal' },
+    e8: { act: 'Let a single drop from a bottle fall onto the ash.',
+          line: 'It will not work. This is not a wound. ...This is time itself' },
+  },
+  raizu: {
+    e1: { act: 'Slid off one ring and set it down beside the flower.', line: 'I do not care to leave a table empty-handed. ...That is your share' },
+    e2: { act: 'Looked into the lock on the gate and flicked it with a fingertip.', line: 'You can tell most of it from the weight of a latch. Warden, you are guarding something worth a great deal' },
+    e3: { act: 'Gave the praying voice an exaggerated shrug.', line: 'Rest and it gets easier? If it gets easier, there’s no reason left to bet' },
+    e4: { act: 'Held a lens up to the white horizon, looking for what color was left.', line: 'I do not care for cheats. ...Painting the whole board white is the worst kind there is' },
+    e5: { act: 'Looked at the soldier of bones and, for the first time, took off every ring and put them away.', line: 'The odds here cannot be read. ...Fine. A table you cannot read is not the worst thing' },
+    e6: { act: 'Slipped off one ring and set it at the foot of the throne.', line: 'It is only manners to put your stake on the table. ...You have not folded at yours yet' },
+    e7: { act: 'Took off a ring and set it down on the blank paper with a small sound.', line: 'Everything staked, for a blank page? That is the most expensive bet there is' },
+    e8: { act: 'Took off a ring and tried setting it on the ash.',
+          line: 'It does not sink. ...Well now. That means someone still remembers' },
+  },
+  kain: {
+    e1: { act: 'Before raising the bow, shifted half a step so as not to tread on the flower.', line: 'Those antlers are dead wood. ...One arrow will likely do it' },
+    e2: { act: 'Measured the height of the gate by eye and counted his arrows again.', line: 'The beast is fast. It will take three. ...I will gather what I use, afterward' },
+    e3: { act: 'Checked the tension of his string while the praying went on.', line: 'Anyone who could sleep on being told to is asleep already' },
+    e4: { act: 'Looked up at the white height and put a finger to the wind.', line: 'A painted-over view keeps no paths for the wind either. ...A hard one to shoot' },
+    e5: { act: 'Kept his eyes on the joints of the great bones.', line: 'Between one bone and the next. One arrow would go through there. ...It probably will not stop at one' },
+    e6: { act: 'Began drawing the string, and stopped halfway.', line: '...One shot ends it. Whether it should be ended is what I am thinking about' },
+    e7: { act: 'Did not nock an arrow, and sounded the string with a finger.', line: '...There is no target. You erased yourself as well' },
+    e8: { act: 'Stood one arrow upright in the ash.',
+          line: 'A marker. So that it is known we came this far' },
+  },
+};
+
+const PAIR_TALE = {
+  'baldo|alvis':  ['Still not lifting that visor? It puts me off my drink', 'If I lift it, I may want to step back'],
+  'baldo|rita':   ['One pair of fists is poor economy', 'Punch for economy and you break things you didn’t mean to'],
+  'baldo|gold':   ['Hey, iron. Whoever gave you orders is dead', '...Understood. Then I shall wait for the next order'],
+  'baldo|shion':  ['Bad news first. It changes how much I pour', 'Then... there might not be any good news at all'],
+  'baldo|hazuki': ['That flower isn’t something you put in before a fight', 'Without it, I would forget where the blade is meant to go back'],
+  'baldo|reia':   ['Young one. Quick to run, at least', 'If you can’t run, you don’t reach the next town'],
+  'baldo|erna':   ['Is there anything in reading ash?', 'Shall I read yours as well? ...It is very heavy'],
+  'baldo|owen':   ['Is my name in that book?', 'It is. You are recorded as having died three times'],
+  'baldo|muse':   ['What’s in that bottle? Trade you for mine', 'Better not. Yours would probably work too well'],
+  'alvis|rita':   ['Do not go forward. I will take it', 'As long as you’re taking it, it never ends'],
+  'alvis|gold':   ['Were you also built to protect someone?', '...Record lost. But the motion of stepping forward remains'],
+  'alvis|shion':  ['Do not run ahead. I cannot shield what I cannot see', 'Then I’ll come back to where you can see me, properly'],
+  'alvis|hazuki': ['I hear you settle it in one. Do not overreach', 'The one stroke is so that I do not have to'],
+  'alvis|reia':   ['Shoot past me if you like. Only give me the signal', 'I’ll be the one who calls it. You stay put'],
+  'alvis|erna':   ['How does the ash on this frame read?', 'Not a single flake has settled on you. ...That is rare'],
+  'alvis|owen':   ['Do you remember the names I failed to protect?', 'Every one of them. ...If you forget, they stay here with me'],
+  'alvis|muse':   ['See to my repairs last', 'I see whoever says that line first. Rule of thumb'],
+  'rita|gold':    ['Hey, does it hurt when you get hit?', '...No pain sensors fitted. I do dent, however'],
+  'rita|shion':   ['Tell me where it’s wide open', 'Right. ...And now that I’ve said it, it’s the left'],
+  'rita|hazuki':  ['Isn’t a sword heavy?', 'Lighter than a fist. Afterward, at least'],
+  'rita|reia':    ['Don’t shoot before I get in close', 'I won’t. I want to watch you dodge'],
+  'rita|erna':    ['What about my ash?', 'It is hot. I have never seen ash still in the middle of burning'],
+  'rita|owen':    ['Reading books doesn’t make you stronger', 'It does. It makes you accurate about where to break things'],
+  'rita|muse':    ['If it breaks, can you fix it?', 'I will. Next time, call me before it breaks'],
+  'gold|shion':   ['Scout. Requesting information on what lies ahead', 'Yes, yes. ...Hey, work a “thank you” in once in a while'],
+  'gold|hazuki':  ['Removing the target', 'Then I shall see it off. ...I would like to do at least that much'],
+  'gold|reia':    ['I would ask that you not stand in my line of fire', 'You’re just too big'],
+  'gold|erna':    ['Requesting analysis', 'Three hundred years under the sand. ...They kept you waiting'],
+  'gold|owen':    ['I am waiting for an order', 'Then let me read one. — “Go.” It says so, right here'],
+  'gold|muse':    ['Damage minor. Treatment unnecessary', 'Whether it is necessary is mine to decide'],
+  'shion|hazuki': ['Where did you pick that flower?', 'From under the ash. ...There is still soil down there, you know'],
+  'shion|reia':   ['Which way do you think the next town is?', 'Whichever way you went and looked. My job is believing you'],
+  'shion|erna':   ['Can you read my ash?', 'Too light to catch hold of. ...That is because you never stop running'],
+  'shion|owen':   ['Can you write down everything I saw?', 'I can. So go and see it, without holding back'],
+  'shion|muse':   ['Should I be resting?', 'You have been running for three days. ...Sit. I will listen'],
+  'hazuki|reia':  ['Do you never hesitate on the trigger?', 'I do. But I shoot while I’m hesitating'],
+  'hazuki|erna':  ['Can you see how I will fall?', 'I cannot. ...And if I could, I would not tell you'],
+  'hazuki|owen':  ['Do you know the names of flowers?', 'Up to three hundred and twenty-seven. ...The one in your hair is not in there yet'],
+  'hazuki|muse':  ['Pain is a thing one conceals, surely', 'When it is concealed, I am the one in trouble. ...Show me'],
+  'reia|erna':    ['So you do fortune-telling', 'It is not fortune-telling. I can only read what happened. The future would be far easier'],
+  'reia|owen':    ['One day I’ll leave without saying anything', 'Then I shall leave a page open for the destination'],
+  'reia|muse':    ['This one’s fine, really', 'People who are fine do not pull their hats down that far'],
+  'erna|owen':    ['Ash or books — which do you think is right?', 'The ash. A book has the writer’s wishes mixed into it'],
+  'erna|muse':    ['May I read what is in that bottle?', 'No. I have a feeling it stops working once it is read'],
+  'owen|muse':    ['May I record your prescriptions?', 'You may. ...The measures are different every time, even for me'],
+
+  'baldo|raizu':  ['Betting your life doesn’t impress me', 'I am not betting it. ...I only bet on the winning number'],
+  'baldo|kain':   ['You got enough arrows, kid?', 'I have enough. I go back for whatever I loose'],
+  'alvis|raizu':  ['I would hear your odds', 'Even. ...Oh, good face. I like people for whom even is enough'],
+  'alvis|kain':   ['I will keep the line clear. Give me the signal', 'No signal needed. I already know you are someone who does not move'],
+  'rita|raizu':   ['Doesn’t all that jangling get in the way?', 'The weight corrects a bad habit in the hand. ...Care to wear one?'],
+  'rita|kain':    ['I’ll make a mess up front, so shoot however you like', 'I will not hit you. ...If I hit you, I do not get the arrow back'],
+  'gold|raizu':   ['Requesting a statement of win probability', 'I shall not tell you. Count it and you can no longer place the bet'],
+  'gold|kain':    ['Securing a firing position. Specify the location', 'Over your right shoulder. ...I will borrow it, as a rest'],
+  'shion|raizu':  ['Hey, can we win?', 'I have my money on winning. ...And I have not lost yet'],
+  'shion|kain':   ['Gap on the right! I see it!', 'I see it too. ...Count to three, and one arrow goes there'],
+  'hazuki|raizu': ['Which is quicker, a blade or a wager?', 'The wager. It is over before you draw'],
+  'hazuki|kain':  ['May I have the first shot?', 'Please. ...I will leave the place you step into open'],
+  'reia|raizu':   ['Are those more rings again?', 'There are. ...I would trade one for that hat of yours'],
+  'reia|kain':    ['If you and I traded shots, who’d be faster?', 'You would. All I do is not miss'],
+  'erna|raizu':   ['That ring has a great deal of ash on it', 'Would you not ask where I picked it up? ...I did win it, that part is true'],
+  'erna|kain':    ['Shall I put fire on your arrows?', 'I will pass. ...A scorched arrow can never be used again'],
+  'owen|raizu':   ['May I record your wins and losses?', 'Write the wins only. I do the remembering for the losses'],
+  'owen|kain':    ['I will keep count of your arrows', 'That helps. ...I lose count while I am shooting'],
+  'muse|raizu':   ['Betting that recklessly is bad for the body', 'Reckless is my trade. ...And if I break, you will mend me'],
+  'muse|kain':    ['Your fingers are cut open again', 'I was restringing the bow. ...This much I can see to myself'],
+  'raizu|kain':   ['Hey — care to bet that arrow?', 'I do not bet arrows. ...I would not be able to gather them'],
+};
+
+const TALE_CLOSE = {
+  solo:      'Alone, standing before this vista.',
+  duo:       'Two of them. Whether they can fill the gap where the third would be is another matter.',
+  allWeak:   'All three elements sit well together, and it is a wind at their backs. Something reckless might just carry.',
+  allSame:   'Three of one color. If they cannot force it through, there is nothing else to try.',
+  triElem:   'Tide and leaf and ember. Three who match nothing, come to look at the same vista.',
+  someWeak:  'One of them has the advantage. How much to put on that one is the question.',
+  allResist: 'The matchup is bad. Not one of them said anything about turning back.',
+  mixed:     'Three of them, each carrying a separate reason, standing at the same door.',
+};
+
+const TALE_POWER = {
+  under: 'They are not strong enough yet. The door opens if you push it all the same.',
+  even:  'The strength is evenly matched. What remains is only what you choose.',
+  over:  'They have learned this one’s breathing by now. ...Even so, no one gets careless.',
+};
+
+const TALE_AFTER = {
+  e1: {
+    chapter: 'The First Vista — the end of it', place: 'After the Narrow Path',
+    lead: [
+      'The antlers broke, and were dead branches again. Gather them up however you like; they will not make antlers anymore.',
+      '',
+      'A thin haze of ash lifted, and then came down again, slowly.',
+      'For the first time, the far end of the narrow path could be seen.',
+    ],
+    ask: '— The last thing they heard was not “thank you.” There was no longer enough memory left in it to become a word.',
+  },
+  e2: {
+    chapter: 'The Second Vista — the end of it', place: 'The Forest Gate, Opened',
+    lead: [
+      'The white beast went back toward the forest. It did not look around, not once.',
+      'The rusted hinges turned with an old sound. It sounded like a sound decades out of use.',
+    ],
+    ask: '— Go through. There is no need to speak the name. That was all the warden said, and then he closed his eyes.',
+  },
+  e3: {
+    chapter: 'The Third Vista — the end of it', place: 'The Hall Where the Prayer Ceased',
+    lead: [
+      'The praying voice stopped. Only after it stopped did they realize it had been a song all along.',
+      'The outline of the thing they never identified came undone into ash.',
+      'Only the folded hands lasted to the end.',
+    ],
+    ask: '— So. You will not rest. There was something in that voice, a little, that sounded like envy.',
+  },
+  e4: {
+    chapter: 'The Fourth Vista — the end of it', place: 'The Height, Repainted',
+    lead: [
+      'The white peeled back, and the color of a town came up from underneath.',
+      'The rust and the grime were all still there, exactly as they had been.',
+      'The saint opened her eyes, and turned her face away from the brightness, as though remembering a vista far off.',
+    ],
+    ask: '— Was it always this loud? The world. It did not sound like a complaint.',
+  },
+  e5: {
+    chapter: 'The Fifth Vista — the end of it', place: 'Past the Bone Field',
+    lead: [
+      'The great bones went down, and the horizon was only a horizon again. Past that line, there was blue.',
+      'The heir sat down at the base of the bones and did not get up again. He threw them his weapon, and nothing else.',
+    ],
+    ask: '— Go on. My watch is over. For the first time, that was not a soldier’s voice.',
+  },
+
+  e6: {
+    chapter: 'The Sixth Vista — the end of it', place: 'The Palace With Its Name Returned',
+    lead: [
+      'The crown rolled and came to rest in the grass among the ash. Its weight, at least, had been real all the way through.',
+      'The throne stood empty, and a quiet wind sat down in it instead.',
+    ],
+    ask: '— The last thing the king said was not an order. It was the name of a forgotten kingdom. They took it in the way one takes something handed over.',
+  },
+  e7: {
+    chapter: 'The Seventh Vista — the end of it', place: 'The One Sheet With Names Left On It',
+    lead: [
+      'The wind turned the blank sheets, one after another. There was nothing written on any of them anymore.',
+      '',
+      'On the very bottom sheet alone, some shaky writing remained.',
+      'It was the kind of writing that tells you it was not missed, but could not be erased.',
+      'What stood there was not his name. It was the names of those who stopped him.',
+      '',
+      'As he went, the man was looking at the far sky. The ash of memory is falling there still.',
+      'It was the same ash, falling at the same rate it had kept since the day he decided to make the world blank.',
+    ],
+    ask: '— I did not begin it. The world was already forgetting faster than people could. I could not even keep up with copying it down. ...That, the lot of you will not stop, however you struggle.',
+  },
+  e8: {
+    chapter: 'The Eighth Vista — the end of it', place: 'Footprints on the Ash',
+    lead: [
+      'The shape of a person came apart, and was ash again.',
+      '',
+      'The ash that had gone on falling through memory’s own timeline seemed to have stopped.',
+      'Memory’s time, which had spent whole years in a single breath, was back to spending one breath.',
+      '',
+      'From now, the world will forget at the same rate that a life is lived.',
+      'The years already gone do not come back. The forgotten names and the vanished towns stay as they are.',
+      'Even so, where they had just walked, footprints remained.',
+      '',
+      'Someone remembers before it settles over — that was the pace it had returned to.',
+      '',
+    ],
+
+    ask: '— One day they too will forget this journey. And until they do, they remember it. Footprints on ash were probably a thing of that kind.',
+  },
+  e9:  { chapter: '第九景 ― おわり', place: '（場所）', lead: ['（倒したあとの情景1）', '（情景2）'], ask: '（敵が最後に残した一文）' },
+  e10: { chapter: '第十景 ― おわり', place: '（場所）', lead: ['（倒したあとの情景1）', '（情景2）'], ask: '（敵が最後に残した一文）' },
+};
+
+const CHAR_AFTER = {
+  baldo: {
+    e1: { act: 'Picked up one dead branch and tied it to the flask at his hip.', line: 'Never did get a name out of it. No matter. I will remember the branch instead' },
+    e2: { act: 'Did not go through the open gate, and crouched down beside the warden instead.', line: 'We weren’t finished talking about the morning market. ...Never mind. Another time' },
+    e3: { act: 'Pulled the stopper and spilled a little on the floor of the hall.', line: 'That’s for the ones who went to sleep. I’ll stay up a while longer' },
+    e4: { act: 'Squinted at the streets with their color back.', line: 'What a wreck of a town. Rusted all over, filthy. ...Ah. That’s the stuff' },
+    e5: { act: 'Picked up the weapon thrown to him, felt the weight of it, and set it down.', line: 'Heavy. How many years did you swing this. ...You stood up well, friend' },
+    e6: { act: 'Picked up the fallen crown, dusted it off, and set it back on the grass.', line: 'I heard the name of the kingdom. I won’t forget it. ...Not even with a drink in me. Not this one' },
+    e7: { act: 'Picked up the last sheet, held it to the light, and put it inside his coat.', line: 'There were names on it. ...See? You couldn’t forget either' },
+    e8: { act: 'Spilled a little drink onto the ash.',
+          line: 'I’ll remember. Right up until the day I forget. ...That’ll do, won’t it' },
+  },
+  alvis: {
+    e1: { act: 'Lowered the shield and measured the scattered branches with his eyes.', line: 'Recorded. At these coordinates there stood one who had forgotten a name' },
+    e2: { act: 'Before passing through the gate, bowed to the warden with his eyes closed.', line: 'The duty of the one who guards ends here. ...I accept the relief' },
+    e3: { act: 'Kept the visor lowered until the praying hands of ash had gone.', line: 'I did not obey the order to rest. That is all' },
+    e4: { act: 'Looked for a while at the town that came out from under the peeling white.', line: 'The record from before the painting was still there. ...We were in time' },
+    e5: { act: 'In front of the seated heir, he set the shield on the ground for the first time.', line: 'We were standing on the same order, most likely. ...This one keeps standing' },
+    e6: { act: 'Set the shield on the ground before the empty throne and saluted.', line: 'You are relieved. ...Your order was carried out to the very end' },
+    e7: { act: 'Set the shield down before the fallen man and knelt, of his own accord, for the first time.', line: 'The duty is done. ...Next comes protecting without erasing' },
+    e8: { act: 'Raised the visor and looked up at the sky the ash was falling from.',
+          line: 'There was no order. And I stood here regardless. ...Recording it' },
+  },
+  rita: {
+    e1: { act: 'Dusted off her fists and stepped wide over the flower.', line: 'It felt far too light under my fists. There was almost nothing left inside' },
+    e2: { act: 'Set a fist lightly against the gatepost and was impressed by how solid it was.', line: 'He was taking hits in a way that would break him before the beast. On purpose' },
+    e3: { act: 'Finally took her hands away from her ears.', line: 'The trouble with singing is you can’t punch it. ...Glad it stopped' },
+    e4: { act: 'Rubbed a palm over a wall where the white had come away.', line: 'It’s rough. You can actually touch it better before it’s painted' },
+    e5: { act: 'Opened her fists, looked at the split skin on her fingers, and closed them again.', line: 'Bare hands against bone is the worst. ...But it wasn’t mine that shattered' },
+    e6: { act: 'Lifted the crown to try it, and grimaced at the weight.', line: 'Ugh, heavy... Sixty years wearing this? I’d have thrown it after three days' },
+    e7: { act: 'Threw the sheaf of blank paper into the air and watched it come down.', line: 'Right — I’ll rewrite all of it! My handwriting’s terrible, though' },
+    e8: { act: 'Wiped her ash-covered fists on her clothes.',
+          line: 'We won without breaking anything at all. ...Strange feeling' },
+  },
+  gold: {
+    e1: { act: 'Gathered the broken branches in one great hand and moved them to the side of the path.', line: 'Processing complete. ...No. Tidied up. That is the better word' },
+    e2: { act: 'Spent a while comparing the width of the open gate with the width of his shoulders.', line: 'I can pass. ...So it was built to be passed through after all. This gate' },
+    e3: { act: 'Went on standing, unmoving, where the praying hands had turned to ash.', line: 'A prayer with no one to issue it. ...I know that. I know it well' },
+    e4: { act: 'On the height with its color back, he ran his visual scan again and again.', line: 'Record updated. The world is not white. ...Overwrite complete' },
+    e5: { act: 'Went down on one knee where the great bones had sunk and passed a hand over the ground.', line: 'Large things become roads when they fall. ...I will, in time' },
+    e6: { act: 'Stood beside the throne and did not move for some time.', line: '...Is it permitted to stop waiting? You stopped' },
+    e7: { act: 'Gathered the scattered pages one at a time and stacked them in order.', line: 'Beginning restoration. ...Lost records can still be gathered' },
+    e8: { act: 'Pulled his arm out of the ash and spoke the depth aloud.',
+          line: 'Rate of accumulation confirmed falling. ...The reason may remain unknown' },
+  },
+  shion: {
+    e1: { act: 'Got there first, and brushed the ash away from around the flower.', line: 'Look, the root is alive! It will bloom here again. It definitely will' },
+    e2: { act: 'Bolted out past the gate and came straight back.', line: 'The forest is still green! See, I told you — I went and looked' },
+    e3: { act: 'Shoved the doors of the hall wide open and breathed the outside air.', line: 'There’s a road! There wasn’t one a moment ago. ...It wasn’t the doors that were shut' },
+    e4: { act: 'Threw both arms wide at the edge of the height and pointed at the town.', line: 'I can see all of it! Roofs, signs, washing on the line! It smells like a town that’s alive' },
+    e5: { act: 'Ran over the ridge of bone and stopped just short of the horizon.', line: '...It’s blue. Hey — there’s more past it. There are vistas we haven’t seen yet' },
+    e6: { act: 'Ran the length of the grass pillars and looked back.', line: 'Hey, the path went all the way through! ...He walked here every single day' },
+    e7: { act: 'Ran out past the window frame and waved with both arms.', line: 'Hey, there’s a road! It carries on properly, this way!' },
+    e8: { act: 'Crouched down and looked at the footprints left on the ash.',
+          line: 'My footprints haven’t gone! ...Look — they haven’t gone!' },
+  },
+  hazuki: {
+    e1: { act: 'Sheathed the blade, then took the flower from her hair and laid it by the branches.', line: 'It cannot stand in for a name. ...But let it stand as a marker, at least' },
+    e2: { act: 'Touched the moss on the gate and felt how soft it was.', line: 'In a place that has been kept, even the moss is soft. ...This is a good gate' },
+    e3: { act: 'Still held the guard of the blade she had sheathed after one stroke.', line: 'There was no resistance to the cut. ...Because a prayer cannot be cut' },
+    e4: { act: 'Picked up a flake of the peeled white and let the wind take it.', line: 'Painting it on and taking it off are both done by hand. ...Both are tiring' },
+    e5: { act: 'Gathered the petals fallen on the bones, one at a time.', line: 'Flowers fall even in a place like this. Not being able to choose where you fall is the same for all of us' },
+    e6: { act: 'Laid a single flower beside the fallen king.', line: 'There is no one left to keep it, so I shall. ...Even one is better than none in bloom' },
+    e7: { act: 'Folded a single blank sheet into the shape of a small flower.', line: 'It blooms even without a name. ...Let us begin remembering again, from here' },
+    e8: { act: 'Put the stem she had drawn out back into her hair.',
+          line: 'The flower is gone. Even so, I remember where it goes' },
+  },
+  reia: {
+    e1: { act: 'Spun the gun back to her hip and pushed up the brim of her hat.', line: 'What I shot was too thin to feel good about. ...Let us get to the next town' },
+    e2: { act: 'Checked the cylinder, then whistled through the open gate.', line: 'A road with nobody guarding it is this wide. ...Almost frightening' },
+    e3: { act: 'Looked up at the light coming through the hole she had shot high in the hall.', line: 'Put a hole in the ceiling and it turned into an ordinary bright room. That was all it took' },
+    e4: { act: 'Read out the signs of the recolored town, one after another.', line: '“Inn.” “Drink.” “Smithy.” ...I can read all of them. A town you can read isn’t dead yet' },
+    e5: { act: 'Lowered the gun with the last round still unspent.', line: 'One round left over. I’ll keep it. ...Not for whoever’s next. As a charm' },
+    e6: { act: 'Put her hat back on and turned her back on the throne.', line: 'Maybe I’ve got a country to keep in mind now too. ...The name I just heard, that’s it' },
+    e7: { act: 'Took off her hat and followed the pages going off on the wind.', line: 'Can’t gather all of them. ...But I’ll take what I can' },
+    e8: { act: 'Took off her hat and beat the ash out of it.',
+          line: 'That might be the first time I didn’t run. ...We’ll see about next time' },
+  },
+  erna: {
+    e1: { act: 'Caught a pinch of the lifted ash and crushed it between her fingers.', line: 'There is nothing left in it to read. ...That is the most frightening way to die' },
+    e2: { act: 'Looked at the ash fallen on the threshold and, unusually, fell silent.', line: 'The beast’s share and the man’s. ...They have run together. There is no telling which is which' },
+    e3: { act: 'Spread both hands in the hall and caught the falling ash.', line: 'All of it the ash of prayer. This sort burns well. ...Burns well, and goes out well' },
+    e4: { act: 'Set a flake of white on her finger in place of ash, started to read it, and stopped.', line: 'White cannot be read. There is nothing written on it. ...That is why she painted, then' },
+    e5: { act: 'Measured the depth of the ash on the bone field with the tip of her staff.', line: 'The ash here is the oldest of all. This is where the world first burned' },
+    e6: { act: 'Scooped up the ash that had gathered at last, and looked at it for a while.', line: 'It has become ash at last. ...Sixty years of weight. It will take a little time to read' },
+    e7: { act: 'Wrapped a pinch of the ash that had finally gathered in a piece of paper.', line: 'It has become ash. Good. ...Far better than never having been' },
+    e8: { act: 'Took another pinch of ash, and this time read it through.',
+          line: '...I read it. One line only. It says, “still here.”' },
+  },
+  owen: {
+    e1: { act: 'Opened his book and added something to a line that had stayed blank.', line: 'I will leave the name blank. ...So that whoever remembers can fill it in one day' },
+    e2: { act: 'Copied the inscription on the gate, then quietly closed the book.', line: 'It was recorded as “the gate that does not open.” ...Correction. It opened' },
+    e3: { act: 'Counted his paces to where the praying hands had become ash, and wrote the number down.', line: 'That someone prayed here, I will set down. Whether it was heard is another matter' },
+    e4: { act: 'Wrote down the name of the town that came out from under the white, his hand shaking.', line: '...This town’s name was fading from my book as well. We were in time' },
+    e5: { act: 'Tried to put the blue beyond the horizon into words, and stalled.', line: 'I cannot write it yet. ...I will go looking for words that catch up to what I saw' },
+    e6: { act: 'Opened the book on the spot and wrote the name he had heard on the first line.', line: 'Written. You need not remember it alone anymore. ...From here, we do the remembering' },
+    e7: { act: 'Knelt where he was and wrote something on the first line of a clean page.', line: 'The opening line is decided. ...“The world remembered.”' },
+    e8: { act: 'Wrote on the blanked page in his own hand, for the first time.',
+          line: 'No more copying down. From here, I write' },
+  },
+  muse: {
+    e1: { act: 'Knelt by the fallen branches and moved as if feeling for a pulse.', line: 'It is habit. ...Even knowing there is no one there, my hands go first' },
+    e2: { act: 'Checked that the warden’s eyes were closed, and put the stopper back.', line: 'That was not a wound anyone could treat. It had been that kind of wound for a very long time' },
+    e3: { act: 'Went along the hall laying blankets over those still sleeping.', line: 'Let them be. ...Now that the singing has stopped, it is only sleep' },
+    e4: { act: 'Moved without a word to stand where she would cast shade for the squinting saint.', line: 'Sudden light hurts the eyes. ...Take your time getting used to it' },
+    e5: { act: 'Let the last drop fall onto the seated heir’s wound.', line: 'It will not cure anything. But the pain eases a little. ...That is enough, surely' },
+    e6: { act: 'Put a hand to the fallen king’s eyelids and closed them, gently.', line: 'You can sleep at last. ...The deepest one in sixty years' },
+    e7: { act: 'Put a hand to the man’s eyelids and closed them, gently.', line: 'You need not write anymore. ...We will do the remembering from here' },
+    e8: { act: 'Stoppered the bottle again and returned it to her belt.',
+          line: 'I could not cure it, but I could make do. ...That is good enough' },
+  },
+  raizu: {
+    e1: { act: 'Left the ring where she had set it, and did not pick it up.', line: 'I am not taking it back. ...The first thing I ever left behind without betting it' },
+    e2: { act: 'Took the lock off the open gate and weighed it in her hand.', line: 'It has real weight. He truly was guarding the whole sum' },
+    e3: { act: 'Watched the praying hands of ash through her lens until the last of it.', line: 'So he folded. ...I will not fault him. Knowing when to fold is a talent' },
+    e4: { act: 'Looked out over the recolored town and pushed her lens up onto her forehead.', line: 'Nothing showy. Dirty, and loud. ...This is the kind of table that pays' },
+    e5: { act: 'Put the rings she had stowed away back on her fingers, one by one.', line: 'Terrible odds. But I did not fold. ...That alone counts as winning' },
+    e6: { act: 'Left the ring where she had set it and stood up.', line: 'So he folded. ...It was a good fold. I wonder if I will manage one someday' },
+    e7: { act: 'Picked the ring back up, put it on, and smiled.', line: 'A great win. The stake was the whole world. ...There will never be another table like it' },
+    e8: { act: 'Picked the ring up off the ash and put it back on.',
+          line: 'I bet on not forgetting. ...And there it is. I won' },
+  },
+  kain: {
+    e1: { act: 'Drew each arrow out one at a time and cleaned the fletching.', line: 'All three came through. ...Good. And the flower is unbroken too' },
+    e2: { act: 'Turned each arrow carefully at the base and drew it out of the gatepost.', line: 'They came out unbroken. ...These arrows have ten more uses in them' },
+    e3: { act: 'Gathered the arrows off the floor of the hall and set them back in the quiver.', line: 'It was a song for putting people to sleep. ...There were fewer awake than asleep' },
+    e4: { act: 'Leaned the bow against a recolored wall and slackened the string.', line: 'The paths of the wind are back. ...Here, I could shoot with my eyes closed' },
+    e5: { act: 'Gave up on the arrow lodged between the bones and left it there.', line: 'I left one behind. I learned today that there are arrows you cannot gather' },
+    e6: { act: 'Left the arrow in the king’s chest and put his hands together.', line: 'I will not gather this one. ...This is the one that stays here' },
+    e7: { act: 'Left the loosed arrow where it was, and picked up one blank sheet.', line: '...I will take one. To write a name on' },
+    e8: { act: 'Pulled up the arrow he had planted and returned it to the bundle.',
+          line: 'This one I could gather. ...We can take all of them home' },
+  },
+};
+
+const PAIR_AFTER = {
+  'baldo|alvis':  ['We won. At least lift the visor', '...If I lift it, I am slower to raise the guard next time'],
+  'baldo|rita':   ['Your knuckles have split', 'Proof I hit something. Leave it and it hardens up'],
+  'baldo|gold':   ['Hey. Today wasn’t an order, was it', '...No. I stepped forward myself. A strange feeling'],
+  'baldo|shion':  ['So — the good news?', 'There was some! One piece of it, properly'],
+  'baldo|hazuki': ['You left the flower behind', 'I still remember where it goes back'],
+  'baldo|reia':   ['Didn’t have to run this time', 'I was ready to. ...And I will be next time too'],
+  'baldo|erna':   ['So what became of my ash?', 'Not one flake yet. ...You are a stubborn one'],
+  'baldo|owen':   ['Don’t write a fourth time', 'I shall not. ...I am moving you to the column for the living'],
+  'baldo|muse':   ['One drink? To celebrate', 'Treatment first. ...One mouthful, and I will join you'],
+  'alvis|rita':   ['It was all taken. I let no one overreach', 'When you take all of it, I’m the one left wanting'],
+  'alvis|gold':   ['You are still standing as well', 'The motion of standing is not forgotten. ...The same as you'],
+  'alvis|shion':  ['You came back to where you could be seen', 'I came back properly, didn’t I. I promised'],
+  'alvis|hazuki': ['That was a fine line of the blade', 'Yes. ...I am glad it was something that could be cut'],
+  'alvis|reia':   ['Your signal was exact', 'Because you stayed put. That helped'],
+  'alvis|erna':   ['Has any of my ash settled?', 'Not yet. ...When it does one day, I shall read it properly'],
+  'alvis|owen':   ['One more name I failed to protect', 'It did not increase. ...I added it to the column of names you did protect'],
+  'alvis|muse':   ['My maintenance can wait', 'That is the second time you have said it. ...I will not listen to a third'],
+  'rita|gold':    ['Your hit is so heavy it’s almost cheating', 'That is the role. ...Yours is fast'],
+  'rita|shion':   ['You were right about the opening', 'Right?! ...I get it one time in three'],
+  'rita|hazuki':  ['Swinging that sword looks heavy', 'It is not light, but on speed I do not lose'],
+  'rita|reia':    ['Could you stop finishing it before I get close?', 'Keeping them at a distance is my job'],
+  'rita|erna':    ['Have I got ash piling up too?', 'I can read it. ...All of it is shaped like bruises'],
+  'rita|owen':    ['You don’t have to write today down', 'I already have. As brave a fight as ever'],
+  'rita|muse':    ['I’m fine, really', 'Your words say so. Your fists do not. ...Sit down'],
+  'gold|shion':   ['Reconnaissance. ...My thanks', '“That is the role.” ...Well? Was my impression any good?'],
+  'gold|hazuki':  ['Your edge is chipped', 'It is. ...A note to myself, until the next sharpening'],
+  'gold|reia':    ['You landed a great many rounds', 'If I miss, I can’t outrun it. ...I’m desperate'],
+  'gold|erna':    ['Does ash come off me as well?', 'It does. Ash of iron. ...It rises the straightest of any'],
+  'gold|owen':    ['Record it, please', 'Already written. ...I noted the force of the blow as well'],
+  'gold|muse':    ['The damage is minor', 'At least let me oil you. ...Nothing but overreaching. I can hear you creak'],
+  'shion|hazuki': ['Did you leave the flower behind?', 'Because there was still soil under the ash'],
+  'shion|reia':   ['I think the next town is that way', 'Then that way it is. My job is... believing you'],
+  'shion|erna':   ['Is my ash still light?', 'It is. ...Go on running about'],
+  'shion|owen':   ['Can I tell you everything I saw?', 'Tell me. ...Slowly is fine. Let us set it down'],
+  'shion|muse':   ['I’m totally fine!', 'That is not something said by someone three days into running. ...Sit'],
+  'hazuki|reia':  ['Hitting from that far is remarkable', 'One stroke up close is the remarkable part. ...Close is frightening'],
+  'hazuki|erna':  ['This flower was blooming under the ash', 'I know. ...That is the sort of flower that lasts'],
+  'hazuki|owen':  ['You will set it down? Even a fight like this one', 'Because it is a fight like this one. ...I write down what is easiest to forget, first'],
+  'hazuki|muse':  ['It is a graze', 'People with grazes do not breathe that shallowly'],
+  'reia|erna':    ['Wasn’t that a bit much burning?', 'It cannot be read unless it burns. ...I do choose the order I burn things in'],
+  'reia|owen':    ['Am I in there?', 'Today you are. ...Before, I had it down as “fled”'],
+  'reia|muse':    ['See to the young ones first', 'You are quite young enough yourself. ...Sit'],
+  'erna|owen':    ['If I burned your books, could I read them?', 'Not even in jest. ...There is no second copy of any of them'],
+  'erna|muse':    ['This world is nothing but wounds that cannot be healed', 'Even so, the pain can be lessened. ...Lessening it is my work'],
+  'owen|muse':    ['I will write down the steps of that treatment', 'Please do. ...For a day when I am not here'],
+
+  'baldo|raizu':  ['See that? We won', 'Naturally. ...That is where my money was'],
+  'baldo|kain':   ['Get all your arrows back?', 'One is still out there. ...I will go looking at first light'],
+  'alvis|raizu':  ['You said the odds were even', 'I did. ...Next time I shall say sixty-forty'],
+  'alvis|kain':   ['Keeping the line clear was worth it', 'Yes. ...It truly helps that you are someone who does not move'],
+  'rita|raizu':   ['So what’s my cut?', 'There is none. ...I shall give you a share of my luck instead'],
+  'rita|kain':    ['Not one came my way', 'I said I would not hit you. ...Did you not believe me?'],
+  'gold|raizu':   ['Requesting the win probability, after the fact', 'A game is won or lost, that is all. And today it is won'],
+  'gold|kain':    ['There is a record of a shoulder being lent', 'Is it scuffed? ...I will wipe it down later'],
+  'shion|raizu':  ['We won! We actually won!', 'I told you so. ...Do not make a scene, it is unbecoming'],
+  'shion|kain':   ['It went right in, didn’t it!', 'It did. ...You were the one who found it'],
+  'hazuki|raizu': ['The wager was quicker after all', 'Was it not? ...But yours was the prettier of the two'],
+  'hazuki|kain':  ['The place I stepped into was clear', 'I cleared it. ...A blade is faster than I am'],
+  'reia|raizu':   ['Money can’t buy you a quick getaway, you know', 'Ha. I fold sometimes too. I am quick about deciding'],
+  'reia|kain':    ['You didn’t miss, of course', 'All I do is not miss. ...The fast one is still you'],
+  'erna|raizu':   ['Oh — so you have lost a great deal as well', 'Did you read that in ash? ...One loses sometimes. That is a game'],
+  'erna|kain':    ['It seems you did not need the fire', 'I have no need of it. ...It ruins the arrows'],
+  'owen|raizu':   ['I have entered today under wins', 'From here it is wins only. ...Throw the page of losses out'],
+  'owen|kain':    ['Seventeen. All confirmed recovered', 'Eighteen. ...I left one behind'],
+  'muse|raizu':   ['There — it is cut after all', 'We won, so it is fine. ...It does hurt'],
+  'muse|kain':    ['I have bound it properly', 'I am sorry. ...Next time I will notice before it cuts'],
+  'raizu|kain':   ['Hey — that one arrow. Had you bet it, you would have won', 'Do you think so? ...That one would not have landed'],
+};
+
+const AFTER_CLOSE = {
+  noLoss:  'No one was lost. It sounds like nothing at all, and in this world it hardly ever happens.',
+  fell:    'Someone brushed the dirt from the knees of the one who had fallen, without a word. No one said anything about doing better next time.',
+  swapped: 'The one who had been in reserve was at the front now, somewhere along the way. Nobody mentioned it.',
+  ult:     'They took that blow and all of them are still standing. How much that means is lost on no one so much as on them.',
+  oath:    'For everything let go of, the body felt that much lighter. Lighter is probably not the right word for it.',
+  quick:   'It was short. So short that the sense of having won has not caught up yet.',
+  long:    'It was a long fight. Now that it is over, no one remembers when the light began to slant.',
+  normal:  'They steady their breathing and get up, one by one. This road is not kind enough to sit down on.',
+};
+
+const AFTER_GAIN = {
+  first: 'The world remembered one thing. A vista won back can no longer be painted over by anyone.',
+  again: 'This vista is already remembered. They only came back to make sure of what they remember.',
+};
+
+const BUBBLE_LINES = {
+  baldo: {
+    start:     ['Right then', 'There’s drink'],
+    attack:    ['Here', 'Still standing'],
+    weak:      ['Too much drink?', 'That told'],
+    hurt:      ['That stings', 'Ow'],
+    low:       ['Out of drink', 'Head’s slow'],
+    heal:      ['That wakes me', 'Back to life'],
+    allyDown:  ['Don’t sleep first', 'We go till dawn'],
+    enemyHalf: ['Now it starts', 'Not done drinking'],
+    win:       ['A toast, then', 'Got the name'],
+    join:      ['Cheers', 'Break’s over'],
+  },
+  alvis: {
+    start:     ['Barrier out', 'Moving up'],
+    attack:    ['Fall back', 'None pass'],
+    weak:      ['Weak point noted', 'There'],
+    hurt:      ['Armor damaged', 'No problem'],
+    low:       ['Frame at limit', 'Still standing'],
+    heal:      ['Repair confirmed', 'My thanks'],
+    allyDown:  ['I failed to shield', 'Moving up'],
+    enemyHalf: ['Raising output', 'The order stands'],
+    win:       ['Mission complete', 'Time to relieve'],
+    join:      ['In position', 'Let me take it'],
+  },
+  rita: {
+    start:     ['Finally, fists', 'Good enough'],
+    attack:    ['Come on!', 'Not done!'],
+    weak:      ['Felt that, right?', 'Solid hit!'],
+    hurt:      ['Bad', 'Ow!'],
+    low:       ['Might be broken', 'Still a fist'],
+    heal:      ['Fists still work!', 'Right, let’s go'],
+    allyDown:  ['Now I’m angry', 'You did that'],
+    enemyHalf: ['That’s it?', 'Now it’s fun'],
+    win:       ['Undefeated!', 'Fists don’t lie'],
+    join:      ['My turn', 'Breaker’s here'],
+  },
+  gold: {
+    start:     ['Powering up', 'Forward'],
+    attack:    ['Break it', 'A heavy blow'],
+    weak:      ['Effective', 'Breaking there'],
+    hurt:      ['Damage minor', 'Still moving'],
+    low:       ['Drive at limit', 'Cannot fall'],
+    heal:      ['Repair, thanks', 'Restarting'],
+    allyDown:  ['I failed to shield', 'Unacceptable'],
+    enemyHalf: ['Output to max', 'Break. That is all'],
+    win:       ['Complete', 'Awaiting orders'],
+    join:      ['Activating', 'Order received'],
+  },
+  shion: {
+    start:     ['I saw it all!', 'Looks strong…!'],
+    attack:    ['Right there!', 'Over here!'],
+    weak:      ['Hit it!', 'See?'],
+    hurt:      ['Wah', 'Owww!'],
+    low:       ['Ah, nearly done', 'That’s it!'],
+    heal:      ['Thank you!', 'All better!'],
+    allyDown:  ['Get up already!', 'Not forgiving that'],
+    enemyHalf: ['Almost there!', 'Only half?!'],
+    win:       ['We did it!', 'Told you'],
+    join:      ['Heeere I go!', 'I’ll go'],
+  },
+  hazuki: {
+    start:     ['One stroke', 'I am ready'],
+    attack:    ['I will cut', 'Just there'],
+    weak:      ['My distance', 'It went through'],
+    hurt:      ['Shallow', 'A graze'],
+    low:       ['I do not withdraw', 'This far, then'],
+    heal:      ['I can go on', 'That helped'],
+    allyDown:  ['It shall not fall', 'The rest is mine'],
+    enemyHalf: ['It starts here', 'In earnest now'],
+    win:       ['We have won', 'The flower holds'],
+    join:      ['I am ready', 'I will cut'],
+  },
+  reia: {
+    start:     ['Let’s be quick', 'Exit ready'],
+    attack:    ['In range', 'Push with numbers'],
+    weak:      ['Dead center!', 'Got it'],
+    hurt:      ['Ugh, let me run!', 'Hey!'],
+    low:       ['Too slow to run', 'Rounds left'],
+    heal:      ['That helped!', 'Escape secured'],
+    allyDown:  ['You’re kidding', 'One more reason'],
+    enemyHalf: ['Time to run?', 'Give it up'],
+    win:       ['I didn’t run', 'Next town'],
+    join:      ['No choice then', 'I do try sometimes'],
+  },
+  erna: {
+    start:     ['It’ll burn well', 'A heavy one'],
+    attack:    ['Burn now', 'There'],
+    weak:      ['It goes right in', 'That spot is weak'],
+    hurt:      ['Oh, is that so', 'So it does hurt'],
+    low:       ['Nearly ash', 'Too soon for ash'],
+    heal:      ['Thank you', 'That helps'],
+    allyDown:  ['More ash', 'I will not have it'],
+    enemyHalf: ['In earnest now', 'Half left'],
+    win:       ['I read it', 'Sleep now'],
+    join:      ['Be easy', 'I will burn it'],
+  },
+  owen: {
+    start:     ['Let me record it', 'A strong one'],
+    attack:    ['For the books', 'Noting it down'],
+    weak:      ['Weakness on record', 'This works'],
+    hurt:      ['Mind the book', 'Within expectation'],
+    low:       ['Mind the books', 'Write to the end'],
+    heal:      ['That helped', 'My thanks'],
+    allyDown:  ['The story goes on', 'The name remains'],
+    enemyHalf: ['The ending is near', 'It gets good here'],
+    win:       ['Written through', 'This page remains'],
+    join:      ['I will take it on', 'Turn the page'],
+  },
+  muse: {
+    start:     ['Don’t overdo it', 'Leave it to me'],
+    attack:    ['Sorry about this', 'I’m no fighter'],
+    weak:      ['There it is', 'Too strong a dose?'],
+    hurt:      ['Oh dear', 'I’ll see to it'],
+    low:       ['I have to stay', 'To the very end'],
+    heal:      ['That’s better', 'You’re all right'],
+    allyDown:  ['There’s still time', 'Wake up, please'],
+    enemyHalf: ['In earnest then', 'Bottles left'],
+    win:       ['Well done, all', 'Everyone goes home'],
+    join:      ['Anyone hurt?', 'Time for a look'],
+  },
+  raizu: {
+    start:     ['I’m in', 'Deal them'],
+    attack:    ['One card', 'I can still bet'],
+    weak:      ['Jackpot', 'Read you right'],
+    hurt:      ['That hurt', 'Slip of the hand'],
+    low:       ['Losing streak', 'Not folding'],
+    heal:      ['That helps', 'I pay my debts'],
+    allyDown:  ['Up. It’s a waste', 'It isn’t over'],
+    enemyHalf: ['Double from here', 'The real hand'],
+    win:       ['I take the pot', 'Quit while I’m ahead'],
+    join:      ['I’m at the table', 'Playing to win'],
+  },
+  kain: {
+    start:     ['Taking aim', 'Nothing wasted'],
+    attack:    ['One arrow', 'Just there'],
+    weak:      ['A hit', 'Center struck'],
+    hurt:      ['I can hold', 'That landed'],
+    low:       ['Arrows left', 'I can still draw'],
+    heal:      ['That helps', 'Thank you'],
+    allyDown:  ['I’ll go get them', 'Please get up'],
+    enemyHalf: ['It starts here', 'I counted them'],
+    win:       ['I’ll gather them', 'It is finished'],
+    join:      ['I’ll take over', 'It won’t be wasted'],
+  },
+};
+
+const BUBBLE_ANY = {
+  start:     ['Let’s go', 'Looks strong…'],
+  attack:    ['Hah', 'There'],
+  weak:      ['It’s working', 'Right there'],
+  hurt:      ['Bad', 'Ngh'],
+  low:       ['Ah, nearly done', 'Still good'],
+  heal:      ['Thank you', 'That helped'],
+  allyDown:  ['Now I’m angry', 'Get up'],
+  enemyHalf: ['Serious now', 'It starts here'],
+  win:       ['It’s over', 'Phew'],
+  join:      ['My turn', 'My turn from here'],
+};
+
+const BUBBLE_PAIR = {
+  'baldo|alvis': [['Cover me', 'Understood'], ['Shield holding?', 'No problem'], ['You drink?', 'I would break']],
+  'baldo|rita': [['Too far forward', 'I’m going in'], ['Knuckles split', 'They’ll harden'], ['You drink?', 'Bad for you']],
+  'baldo|gold': [['Can’t see', 'Stay behind me'], ['No rust on you', 'I am polished'], ['You drink?', 'Oil, rather']],
+  'baldo|shion': [['Where’s it soft?', 'Back right!'], ['You run too much', 'I can’t stop'], ['You drink?', 'Not if it’s bitter']],
+  'baldo|hazuki': [['Don’t draw yet', 'Too late'], ['Flower safe?', 'At my breast'], ['You drink?', 'I hold it well']],
+  'baldo|reia': [['Rounds enough?', 'Haven’t counted'], ['Don’t bolt', 'Legs on standby'], ['You drink?', 'Escape first!']],
+  'baldo|erna': [['Read the ash?', 'It is heavy'], ['What do you see?', 'An ending’s shape'], ['You drink?', 'You drink too much']],
+  'baldo|owen': [['Writing this?', 'Naturally'], ['And my name?', 'Third time now'], ['You drink?', 'I could not write']],
+  'baldo|muse': [['See me last', 'You are last'], ['I can still drink', 'Sit down'], ['You drink?', 'Too much is poison']],
+  'baldo|raizu': [['Care to bet?', 'On the winner'], ['Rings are bright', 'They cost a lot'], ['You drink?', 'Till dawn, then?']],
+  'baldo|kain': [['Arrows enough?', 'If I gather them'], ['Don’t spare them', 'I will not'], ['You drink?', 'Water for me']],
+  'alvis|rita': [['Stand back', 'Not a chance'], ['I will take it', 'I’ll break it'], ['No recklessness', 'Didn’t ask']],
+  'alvis|gold': [['Line up', 'Lining up'], ['Take the front', 'The front suits me'], ['Same model?', 'Probably not']],
+  'alvis|shion': [['Can you see?', 'Perfectly!'], ['And the way out?', 'It’s there'], ['Stay still', 'No, no, no']],
+  'alvis|hazuki': [['I take it', 'Then I cut'], ['Behind the shield', 'From behind, then'], ['Did I shield you?', 'You did']],
+  'alvis|reia': [['Signal', 'Three, two…'], ['Line is clear', 'Thanks'], ['Can you take it?', 'I don’t miss']],
+  'alvis|erna': [['Will it burn?', 'It will'], ['I dislike ash', 'You are fine yet'], ['Records vanish', 'Then I’ll remember']],
+  'alvis|owen': [['Is that an enemy?', 'Not in any book'], ['Will I be written?', 'Naturally'], ['Let us protect it', 'The books too']],
+  'alvis|muse': [['I can still move', 'Not my field'], ['No repairs needed', 'I’ll oil you'], ['I feel no pain', 'I feel it']],
+  'alvis|raizu': [['The odds?', 'Even money'], ['I am poor at bets', 'You can count'], ['I do not fall back', 'I do not fold']],
+  'alvis|kain': [['Line is clear', 'I’ll thread it'], ['Over the shield', 'Borrowing it'], ['Shoot on signal', 'Any time']],
+  'rita|gold': [['Take the heavy one', 'Leave it to me'], ['Can I hit you?', 'For practice?'], ['You’re solid', 'I am iron']],
+  'rita|shion': [['Where do I aim?', 'Dead center!'], ['I’ll open a way!', 'Thanks!'], ['You’re fast!', 'Not done yet!']],
+  'rita|hazuki': [['Going ahead', 'Do take care'], ['Sword looks heavy', 'The draw is quick'], ['Pretty flower', 'Until it falls']],
+  'rita|reia': [['Hit it', 'Obviously'], ['Don’t hit me', 'Move, move'], ['Cover me', 'I might run']],
+  'rita|erna': [['It’s burning', 'I am burning it'], ['Not too hot?', 'Get used to it'], ['Fists are best', 'Mind your hands']],
+  'rita|owen': [['Counting?', 'Thirty-seven'], ['Books heavy?', 'Lighter than lives'], ['Can’t read', 'Shall I tell it?']],
+  'rita|muse': [['I’m still good', 'Liar'], ['It’s a scratch!', 'Show me'], ['Fix me', 'Hold still']],
+  'rita|raizu': [['Will it land?', 'I make it land'], ['All that jangling', 'Nice sound, no?'], ['We’ll win!', 'I’m in!']],
+  'rita|kain': [['Going in', 'As always'], ['Too far back!', 'Within range'], ['Good aim', 'I can see it']],
+  'gold|shion': [['Report ahead', 'There’s a road!'], ['Specify a course', 'Straight on!'], ['Speed exceeded', 'Keep up!']],
+  'gold|hazuki': [['I go first', 'After you'], ['I am the shield', 'That helps'], ['Flower in the way?', 'I protect it']],
+  'gold|reia': [['Cover, please', 'Leave it to me'], ['Angle is clear', 'Appreciated'], ['Your hit rate?', 'Don’t ask']],
+  'gold|erna': [['Give me heat', 'All of it'], ['Analysis failed', 'Same here'], ['Can we win?', 'We will']],
+  'gold|owen': [['Record it', 'Already am'], ['My model number?', 'Not in the book'], ['Seeking tactics', 'Let me direct you']],
+  'gold|muse': [['Damage minor', 'I’ll oil you'], ['No pain sensors', 'That’s the trouble'], ['No service needed', 'Convenient body']],
+  'gold|raizu': [['Requesting odds', 'I shan’t tell'], ['Cannot compute', 'That is the bet'], ['I dislike chance', 'I love it']],
+  'gold|kain': [['Position secured', 'That helps'], ['Lending a shoulder', 'Borrowing it'], ['Gathering arrows', 'Leave that to me']],
+  'shion|hazuki': [['A flower!', 'I’ll pick it later'], ['It’s open ahead', 'Let us go'], ['Hurry!', 'You will trip']],
+  'shion|reia': [['It went that way', 'Don’t come here!'], ['Me first!', 'Wait up'], ['Wind’s changed', 'Then it’s now']],
+  'shion|erna': [['Smells burnt', 'A good smell'], ['Hot!', 'Too close'], ['Thirsty?', 'Later']],
+  'shion|owen': [['You’re clever', 'Only long-lived'], ['I went and looked!', 'Let me hear it'], ['Nice writing', 'My hand remembers']],
+  'shion|muse': [['I can still run!', 'Sit down'], ['I’m fine, really!', 'I know'], ['Ow!', 'Hold still']],
+  'shion|raizu': [['Hey, can we win?', 'I back the winner'], ['Can I have a ring?', 'When you earn it'], ['Let’s bet!', 'Too soon for you']],
+  'shion|kain': [['Right is open!', 'Right, understood'], ['Over there!', 'I see it'], ['Hurry!', 'I’m aiming']],
+  'hazuki|reia': [['One stroke does it', 'Numbers settle it'], ['This is my range', 'The gun wins'], ['After you', 'No, after you']],
+  'hazuki|erna': [['Ash is rising', 'Light as petals'], ['Will it burn?', 'Cut it first'], ['I dislike heat', 'Get used to it']],
+  'hazuki|owen': [['Tea afterward?', 'After we win'], ['This one stroke', 'Writing it down'], ['No name needed', '“The Flower,” then']],
+  'hazuki|muse': [['A shallow wound', 'Do not push it'], ['I will stop it', 'That is my work'], ['I can still stand', 'I will not let you']],
+  'hazuki|raizu': [['Poor manners', 'Winning is winning'], ['There is a form', 'Winning is form'], ['In one stroke', 'In one hand']],
+  'hazuki|kain': [['One shot first?', 'Sounding it now'], ['I am stepping in', 'I will match you'], ['So quiet', 'It is a bow']],
+  'reia|erna': [['Range is the way', 'Agreed'], ['I run, remember?', 'I’ll tell on you'], ['Can’t see a thing', 'Fond of smoke?']],
+  'reia|owen': [['Write my name', 'Already have'], ['How many rounds?', 'Twelve'], ['I’ll read it later', 'Be my guest']],
+  'reia|muse': [['The young first', 'You are young too'], ['I’m fine, really', 'Take the hat off'], ['Too slow to run', 'I’ll see to you']],
+  'reia|raizu': [['Betting again?', 'Winning today'], ['Buy me a drink', 'If I win'], ['Not running?', 'I’m mid-hand']],
+  'reia|kain': [['Who’s faster?', 'You are'], ['Got rounds?', 'Arrows, yes'], ['You always gather', 'It is thrift']],
+  'erna|owen': [['Shall I burn it?', 'Please do not'], ['I like books too', 'I have plenty'], ['A page of ash', 'I have a copy']],
+  'erna|muse': [['Can you cure it?', 'Only the pain'], ['I burned myself', 'I did warn you'], ['Does that work?', 'I make it work']],
+  'erna|raizu': [['Rings heavy?', 'Hardly light'], ['Luck is unreadable', 'That is the fun'], ['Shall I burn them?', 'Shall we bet?']],
+  'erna|kain': [['Your arrow burned', 'I will make more'], ['You mend so much', 'It is housekeeping'], ['Shall I help?', 'I can manage']],
+  'owen|muse': [['Let us record it', 'A good idea'], ['The measures?', 'Never the same'], ['What is in it?', 'Things that lived']],
+  'owen|raizu': [['Recording it', 'Only the wins'], ['The losses as well', 'Cross those out'], ['How many now?', 'I do not count']],
+  'owen|kain': [['Arrows enough?', 'Seventeen'], ['How many broken?', 'Two. Both mendable'], ['Tea afterward?', 'If we get home']],
+  'muse|raizu': [['Do not overdo it', 'That is my trade'], ['You bet too much', 'It’s the moment!'], ['Sit down', 'After I win']],
+  'muse|kain': [['Your finger is cut', 'It is a graze'], ['New string?', 'Last night'], ['Get some rest', 'While arrows last']],
+  'raizu|kain': [['Bet me that arrow?', 'Never arrows'], ['How dull', 'It is enough'], ['Land it, I’ll pay', 'Then I shall']],
+};
+
+const HELP = {
+  title: 'How to play',
+  lead: 'There is not much to learn. Know these six things first and you will not get lost.',
+  items: [
+    { h: 'Carry a Vista, and a skill becomes usable',
+      t: 'In Party, give one Vista to one companion. Anyone without a Vista cannot use their skill. '
+       + 'Drawing the same Vista again raises its rank, and the rank is how many times that skill can be used in a battle.' },
+    { h: 'Companions grow from duplicate draws, more than from fighting',
+      t: 'Drawing the same companion again raises their level by 3 and their rank by 1. '
+       + 'Shards come from defeating enemies. If you want to get stronger, draw first.' },
+    { h: 'You can swap as often as you like in a turn',
+      t: 'Trading with your reserve is where the strategy lives — treat it as rearranging the line. '
+       + 'You can also move a fallen companion into reserve and bring them back with a skill.' },
+    { h: 'A Lost Art is a heavy blow that costs 5 levels',
+      t: 'Usable at Lv6 and above, once HP is at half or below. Using it drops the level by 5, '
+       + 'but battles and duplicate draws will raise it again. **Nothing is lost for good.**' },
+    { h: 'When the enemy’s Collapse gauge fills, an Ultimate comes',
+      t: 'It is the bar under the enemy’s name. Finish before it fills, '
+       + 'wind it back with a skill like Shion’s, or brace and take it — that is the decision.' },
+    { h: '“Keep your journey” gives you a watchword',
+      t: 'Your progress is saved in the browser automatically, but a browser can lose it. '
+       + 'Keep the watchword somewhere and you can carry on from another device.' },
+  ],
+  close: '— The rest you can pick up as you play.',
+
+  credit: {
+    h: 'About this work',
+    t: 'The images are made with **Midjourney**, the music and sound with **Suno**. '
+     + 'The writing and the workings of the game were made by Basil Pepper Orange (https://x.com/Basil_Pepper), together with **Claude Code**.',
+  },
+};
+
+const ENDING = {
+  bg: 'title.jpg',
+  chapter: 'The Last Vista',
+  place: 'The World After the Ash',
+
+  lead: [
+    'The ash that seemed to have stopped was still coming down, slowly, in a form too fine to see.',
+    'What changed was the speed. A flower’s name heard in the morning could be held until evening. In this world, so small a thing felt like something long remembered.',
+    'After half a year or so, the houses in towns everywhere began to fill with noise again. It was not that anyone had remembered. There was simply time enough, before the forgetting, to talk.',
+    'What happened at the bottom of the ash is written down nowhere. The hundreds of years memory had spent did not come back either. The towns gone from memory stayed gone, and the forgotten names stayed forgotten.',
+    'What came back was only the time still ahead. That was the whole of what was won there, that day — and it was probably that which held the world in place.',
+  ],
+
+  party: 'What became of the world after that is written down nowhere. Only that {names} may still be together.',
+
+  close: [
+    'One day you too will forget this journey. What the Ash of Memory said was neither a lie nor a threat. No one gets out of forgetting.',
+    'Even so — before the forgetting, there is still all of this time.',
+  ],
+  last: '— Until it is forgotten, it is truly remembered.',
+
+  btn: 'To the credits',
+  btnBack: 'Return',
+};
+
+const CREDITS = {
+  bg: 'title.jpg',
+
+  roll: [
+    { kind: 'space', value: 40 },
+    { kind: 'title', value: 'REMAINS at the END' },
+    { kind: 'sub',   value: '— holding the world’s memory in place —' },
+    { kind: 'space', value: 120 },
+    { kind: 'role',  value: 'Made by' },
+    { kind: 'name',  value: 'Basil Pepper Orange' },
+    { kind: 'space', value: 90 },
+
+    { kind: 'role',  value: 'Images' },
+    { kind: 'sub',  value: 'Midjourney' },
+    { kind: 'space', value: 20 },
+    { kind: 'role',  value: 'Music and sound' },
+    { kind: 'sub',  value: 'Suno' },
+    { kind: 'space', value: 20 },
+    { kind: 'role',  value: 'Development' },
+    { kind: 'sub',  value: 'Claude Code (Opus 5)' },
+    { kind: 'space', value: 160 },
+    { kind: 'text',  value: 'In this story, you met twelve people.' },
+    { kind: 'text',  value: 'You came through twelve vistas, and eight who stood in the way.' },
+    { kind: 'text',  value: 'Some of them you may already be unable to recall.' },
+    { kind: 'space', value: 120 },
+    { kind: 'text',  value: 'Even so, there is something to be thankful for.' },
+    { kind: 'text',  value: 'That until the forgetting, you truly remembered.' },
+    { kind: 'space', value: 80 },
+  ],
+
+  last: [
+    'This story, and the road they walked, will go from memory one day as well.',
+    'When you have forgotten it, remember the verse, and come and see them again.',
+    'Look — there are still footprints on the ash.',
+  ],
+  poemHead: 'The journey you held in place',
+  poemNote: 'Copy this verse down, and when you have forgotten, you can begin again from here.',
+
+  speed: 62,
+
+  btnSkip: 'Skip to the end',
+  btnEnd: 'The End',
+};
+
+const HALF_VOICE = {
+  baldo: {
+    e7: ['The torn pages — I will read them', 'The names you erased. I remember them'],
+    e8: ['I will drink it dry before it settles', 'I told you I am not letting go yet'],
+  },
+  alvis: {
+    e7: ['The names of the erased are in my keeping', 'No more pages will be torn out'],
+    e8: ['Thin as it gets, I stand here', 'The order of protection does not change'],
+  },
+  rita: {
+    e7: ['Talks a lot, for paper', 'If it tears, I will do the tearing'],
+    e8: ['If I cannot hit it, I hit until I can', 'Ash is just something to kick apart'],
+  },
+  gold: {
+    e7: ['Damage confirmed. ...Repair falls to me', 'Recording continues. ...Not finished yet'],
+    e8: ['Accumulation rising. ...I move regardless', 'Time exceeded. ...There is no problem'],
+  },
+  shion: {
+    e7: ['The roads I have seen — you do not erase them', 'Going ahead! Catch up!'],
+    e8: ['I can still run! Ash is not beating me', 'I know the road. I know all of it'],
+  },
+  hazuki: {
+    e7: ['I will not let it go blank. There is one flower', 'I will set a bookmark in the erased page'],
+    e8: ['I remember where it was set', 'Under the ash there is still soil'],
+  },
+  reia: {
+    e7: ['No way out means straight through the front', 'That page — I will put a hole through it'],
+    e8: ['No running today. Just today', 'On speed, I do not intend to lose'],
+  },
+  erna: {
+    e7: ['A blank page cannot be read. So it burns', 'I will read the ash of the erased pages too'],
+    e8: ['I will read it through. All of the ash', 'Burn it and it should lighten a little'],
+  },
+  owen: {
+    e7: ['Erase the writer and the copy remains', 'I am the last volume. You will not burn it'],
+    e8: ['I will finish writing before it settles', 'This page is not blank yet'],
+  },
+  muse: {
+    e7: ['Pain I can treat. Forgetting I cannot', 'I will tend to the ones who are gone as well'],
+    e8: ['If I cannot cure it, I will make do', 'I have no intention of sitting a deathbed yet'],
+  },
+  raizu: {
+    e7: ['I have not sunk to betting on a blank page', 'That page — I will raise on it'],
+    e8: ['The odds are bad. That is what makes it good', 'Everything on not forgetting'],
+  },
+  kain: {
+    e7: ['The erased pages — I will gather those too', 'One at a time, I will have them back'],
+    e8: ['Even out of the ash, they can be gathered', 'There are arrows left'],
+  },
+};
