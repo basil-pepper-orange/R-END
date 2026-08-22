@@ -1108,6 +1108,8 @@ const SCREENS = {
   stage:  { el: 'screen-stage',  title: '探索',         back: true,  dock: false },
   tale:   { el: 'screen-tale',   title: '物語',         back: true,  dock: false },
 
+  story:  { el: 'screen-story',  title: '前日譚',       back: true,  dock: false },
+
   after:  { el: 'screen-tale',   title: '物語',         back: false, dock: false },
   battle: { el: 'screen-battle', title: '戦闘',         back: false, dock: false },
   result: { el: 'screen-result', title: '戦闘結果',     back: false, dock: false },
@@ -2047,6 +2049,37 @@ $('screen-party').addEventListener('click', (ev) => {
   }
 }, true);
 
+function hasCharStory(cid) {
+  return !!(typeof CHAR_STORY !== 'undefined' && CHAR_STORY[cid]);
+}
+
+function openCharStory(cid) {
+  const t = (typeof CHAR_STORY !== 'undefined' && CHAR_STORY[cid]) || null;
+  if (!t) return;
+  const c = charById(cid);
+  closeModal();
+
+  $('story-bg').style.backgroundImage = `url(${CONFIG.charDir}${cid}.jpg)`;
+  $('cstory-body').innerHTML = `
+    <div class="cstory__head">
+      <div class="cstory__ttl">
+        <div class="cstory__chapter">${escapeHtml(t.chapter || '')}</div>
+        <div class="cstory__place">${escapeHtml(t.place || '')}</div>
+        <div class="cstory__who">${elemBadge(c.elem, 'elem--sm')} <b>${c.name}</b> <small>${c.title}</small></div>
+      </div>
+    </div>
+    ${(t.lead || []).map((x) => {
+      const s = String(x == null ? '' : x);
+
+      return s.trim()
+        ? `<p class="cstory__p">${escapeHtml(s).replace(/\n/g, '<br>')}</p>`
+        : '<p class="cstory__p cstory__gap">&nbsp;</p>';
+    }).join('')}
+    ${t.ask ? `<p class="cstory__ask">${escapeHtml(t.ask)}</p>` : ''}
+  `;
+  go('story');
+}
+
 function openCharModal(cid) {
   const c = charById(cid), own = S.chars[cid], st = statsOf(cid);
   const eq = own.eq ? landById(own.eq) : null;
@@ -2108,7 +2141,7 @@ function openCharModal(cid) {
               </div>
             </div>`
           : `<div class="md__warn">風景の記憶を装備していないため、<b>スキルが使えません</b>。</div>`}
-    <div class="md__row">
+    <div class="md__row md__row--tight">
       <button type="button" class="btn btn--sub" id="md-equip">
         ${eq ? '別の景色にする' : '景色を装備する'}
       </button>
@@ -2116,20 +2149,18 @@ function openCharModal(cid) {
     </div>
 
     <div class="md__label">パーティ</div>
-    <div class="md__row">
+    <div class="md__row md__row--tight">
       <button type="button" class="btn btn--sub" id="md-party">
         ${inParty ? 'パーティから外す' : 'パーティに加える'}
       </button>
       <button type="button" class="btn btn--sub" id="md-reserve">
         ${S.reserve === cid ? '控えから外す' : '控えにする'}
       </button>
-      <button type="button" class="btn btn--sub" id="md-zoom-btn">拡大して見る</button>
     </div>
   `);
 
   const zoomChar = () => openViewer(CONFIG.charDir + cid + '.jpg', c.name, `${c.title}${charStarText(c)}`);
   $('md-zoom').onclick = zoomChar;
-  $('md-zoom-btn').onclick = zoomChar;
   $('md-equip').onclick = () => openEquipModal(cid);
   if ($('md-unequip')) $('md-unequip').onclick = () => {
     S.chars[cid].eq = null; save(); closeModal(); renderParty(); toast('装備を外した');
@@ -2268,7 +2299,10 @@ function renderBook() {
       ? `<img src="${CONFIG.charDir}${c.id}.jpg" alt="">
          <span class="bcard__cap">${c.name}${charStars(c) ? '<br>' + charStars(c) : ''}</span>`
       : `<span class="bcard__num">？</span>`;
-    card.onclick = has ? () => openCharModal(c.id) : () => toast('まだ出会っていません');
+
+    card.onclick = has
+      ? () => (hasCharStory(c.id) ? openCharStory(c.id) : openCharModal(c.id))
+      : () => toast('まだ出会っていません');
     clist.appendChild(card);
   });
 }
@@ -2333,6 +2367,25 @@ function ultNote(e) {
 function renderStages() {
   const wrap = $('stages');
   wrap.innerHTML = '';
+
+  if (typeof PROLOGUE !== 'undefined' && PROLOGUE) {
+    const pb = document.createElement('button');
+    pb.type = 'button';
+    pb.className = 'stage stage--prologue has-art';
+    pb.innerHTML = `
+      <span class="stage__art" style="background-image:url(${CONFIG.uiDir}${PROLOGUE.image || CONFIG.bgTitle})"></span>
+      <div class="stage__label">${escapeHtml(PROLOGUE.chapter || '')}</div>
+      <div class="stage__name">${escapeHtml(PROLOGUE.place || '')}</div>
+      ${PROLOGUE.blurb ? `<div class="stage__desc">${escapeHtml(PROLOGUE.blurb)}</div>` : ''}
+    `;
+    const pn = document.createElement('span');
+    pn.className = 'stage__tale';
+    pn.textContent = 'この世界のこと';
+    pb.appendChild(pn);
+    pb.onclick = () => openPrologue();
+    wrap.appendChild(pb);
+  }
+
   ENEMIES.forEach((e, i) => {
     const open = stageUnlocked(i);
     const cleared = !!S.cleared[e.id];
@@ -2369,6 +2422,7 @@ function renderStages() {
 }
 
 let taleEid = null;
+let taleMode = null;
 let afterOut = null;
 
 function taleHash(s) {
@@ -2478,12 +2532,12 @@ function taleParas(v) {
   const arr = Array.isArray(v) ? v : [v];
   const out = [];
   arr.forEach((t) => {
-    String(t == null ? '' : t).split('\n').forEach((line) => out.push(line.trim()));
+
+    String(t == null ? '' : t).split('\n')
+      .forEach((line) => out.push(line.replace(/\s+$/, '')));
   });
 
-  while (out.length && !out[0]) out.shift();
-  while (out.length && !out[out.length - 1]) out.pop();
-  return out.map((t) => (t ? `<p>${escapeHtml(t)}</p>` : '<p class="tale__gap"></p>')).join('');
+  return out.map((t) => (t ? `<p>${escapeHtml(t)}</p>` : '<p class="tale__gap">&nbsp;</p>')).join('');
 }
 
 function renderTaleBody(d) {
@@ -2529,8 +2583,32 @@ function renderTaleBody(d) {
 
 function openTale(eid) {
   taleEid = eid;
+  taleMode = null;
   renderTale(eid);
   go('tale');
+  $('screen-tale').scrollTop = 0;
+}
+
+function openPrologue() {
+  const t = (typeof PROLOGUE !== 'undefined' && PROLOGUE) || null;
+  if (!t) return;
+  taleEid = null;
+  taleMode = 'prologue';
+  const img = `${CONFIG.uiDir}${t.image || CONFIG.bgTitle}`;
+  $('tale-body').innerHTML = `
+    ${img ? `<div class="tale__art"><img src="${img}" alt=""></div>` : ''}
+    <div class="tale__head">
+      <div class="tale__chapter">${escapeHtml(t.chapter || '')}</div>
+      <div class="tale__place">${escapeHtml(t.place || '')}</div>
+    </div>
+    <div class="tale__lead">${taleParas(t.lead)}</div>
+    <div class="tale__ask">${taleParas(t.ask)}</div>
+  `;
+  $('btn-tale-go').textContent = '探索へもどる';
+  $('btn-tale-skip').hidden = true;
+  go('tale');
+
+  $('hud-title').textContent = 'プロローグ';
   $('screen-tale').scrollTop = 0;
 }
 
@@ -2595,6 +2673,7 @@ function buildAfterTale(eid, out) {
 }
 
 function openAfterTale(eid, out) {
+  taleMode = null;
   afterOut = out;
   taleEid = eid;
   renderTaleBody(buildAfterTale(eid, out));
@@ -2759,6 +2838,8 @@ function makeUnit(cid) {
               atk: st.atk, def: st.def, action: 'attack',
               skillLeft: uses, skillMax: uses, eff, shield: 0, seal: 0,
               charge: 0, chant: 0,
+
+              hpPending: 0,
               revivePick: null,
 
               st: { dmg: 0, taken: 0, act: { attack: 0, own: 0, skill: 0, lost: 0 } } };
@@ -2829,6 +2910,9 @@ function swapReserve(i, forced) {
   B.units[i] = nu;
   B.reserve = (u && u.hp <= 0) ? u : null;
   B.reserveIn = true;
+
+  if (B.cover && B.cover.i === i) B.cover = null;
+  if (B.parry && B.parry.i === i) B.parry = null;
   nu.action = 'attack';
   applyGuardOthers();
   Sound.play('common/heal');
@@ -2884,6 +2968,8 @@ function startBattle(eid) {
     stolen: stolen ? stolen.map((s) => s.stolenFrom) : [],
     ehp: e.hp,
     ehpMax: e.hp,
+
+    ehpPending: 0,
     pinch: false,
     halfDone: false,
     skipEnemyTurn: false,
@@ -2948,6 +3034,7 @@ function startBattle(eid) {
   if (oldPop) oldPop.remove();
   $('enemyfx').innerHTML = '';
   $('unitfx').innerHTML = '';
+  settleUnitHp();
   pendingPops = [];
   pendingHits = [];
   clearBubbles();
@@ -3097,19 +3184,25 @@ function flashRage(rl) {
   rageFlashTimer = setTimeout(() => rl.classList.remove('is-rise'), 780);
 }
 
+function paintEnemyHp() {
+  if (!B) return;
+  const shown = Math.min(B.ehpMax, Math.max(0, B.ehp + (B.ehpPending || 0)));
+  $('enemy-hpfill').style.width = clamp(shown / B.ehpMax * 100, 0, 100) + '%';
+  $('enemy-hpnum').textContent = `${shown} / ${B.ehpMax}`;
+
+  $('enemy-body').classList.toggle(
+    'is-danger',
+    !B.over && shown > 0 && shown / B.ehpMax <= (CONFIG.dangerRate == null ? 0.5 : CONFIG.dangerRate)
+  );
+}
+
 function renderBattle() {
 
   if (!B) return;
 
   if (current === 'battle' && !B.over) Sound.playBgm(battleBgmName());
 
-  $('enemy-hpfill').style.width = clamp(B.ehp / B.ehpMax * 100, 0, 100) + '%';
-  $('enemy-hpnum').textContent = `${Math.max(0, B.ehp)} / ${B.ehpMax}`;
-
-  $('enemy-body').classList.toggle(
-    'is-danger',
-    !B.over && B.ehp > 0 && B.ehp / B.ehpMax <= (CONFIG.dangerRate == null ? 0.5 : CONFIG.dangerRate)
-  );
+  paintEnemyHp();
   $('turn-label').textContent = `ターン ${B.turn}`;
   $('btn-history').hidden = false;
   $('btn-flee').disabled = B.busy || B.over;
@@ -3174,7 +3267,9 @@ function renderBattle() {
     const own = charById(u.cid).own;
     const div = document.createElement('div');
 
-    const danger = !dead && u.hp <= u.max * (CONFIG.dangerRate == null ? 0.5 : CONFIG.dangerRate);
+    const shown = Math.min(u.max, Math.max(0, u.hp + (u.hpPending || 0)));
+
+    const danger = !dead && shown > 0 && shown <= u.max * (CONFIG.dangerRate == null ? 0.5 : CONFIG.dangerRate);
     div.className = 'unit' + (dead ? ' is-dead' : '') + (u.seal > 0 ? ' is-sealed' : '')
                   + (danger ? ' is-danger' : '')
                   + (B.swapPick && canSwapOut(i) ? ' is-swapable' : '')
@@ -3191,8 +3286,8 @@ function renderBattle() {
         ${u.chant ? '<span class="unit__mark unit__mark--chant">唱</span>' : ''}
         <div class="unit__info">
           <div class="unit__name">${u.name}<span class="unit__lv">Lv.${S.chars[u.cid] ? S.chars[u.cid].lv : '-'}</span></div>
-          <div class="bar"><span style="width:${clamp(u.hp / u.max * 100, 0, 100)}%;background:${u.hp < u.max * 0.3 ? 'var(--hp-low)' : 'var(--hp)'}"></span></div>
-          <div class="unit__hp${u.hp < u.max * 0.3 ? ' is-low' : ''}">${Math.max(0, u.hp)} / ${u.max}</div>
+          <div class="bar"><span style="width:${clamp(shown / u.max * 100, 0, 100)}%;background:${shown < u.max * 0.3 ? 'var(--hp-low)' : 'var(--hp)'}"></span></div>
+          <div class="unit__hp${shown < u.max * 0.3 ? ' is-low' : ''}">${shown} / ${u.max}</div>
         </div>
       </div>
       ${dead && B.reserve && B.reserve.hp > 0 ? `<button type="button" class="unit__swap" data-a="swap">${B.reserve.name} と交代</button>` : `
@@ -3860,12 +3955,17 @@ function strikeEnemy(u, power, readable, k) {
     else if (d >= mx * (cf.hurtRate == null ? 0.05 : cf.hurtRate)) enemySay('hurt');
   }
 
+  const myB = B;
   const show = () => {
+    if (B !== myB) return;
+    if (B.ehpPending) B.ehpPending = Math.max(0, B.ehpPending - d);
     popEnemy(String(d), crit ? 'crit' : (mul > 1 ? 'weak' : ''), k);
     if (crit) Sound.play('common/crit', 'common/enemy_attack');
+    paintEnemyHp();
   };
   const dly = hitBeat(k);
-  if (dly > 0) setTimeout(show, dly); else show();
+  if (dly > 0) { B.ehpPending = (B.ehpPending || 0) + d; setTimeout(show, dly); }
+  else show();
 
   const tag = (mul > 1 ? '　<span class="weak">弱点!</span>' : '')
             + (crit ? '　<span class="crit">会心!</span>' : '')
@@ -4379,6 +4479,7 @@ function playHalfHeal(cut, done) {
   const fx = CONFIG.halfHealFx || {};
   const blink = fx.blinkMs == null ? 1000 : fx.blinkMs;
   const fill  = fx.fillMs  == null ? 1300 : fx.fillMs;
+  if (B) B.ehpPending = 0;
   const bar = document.querySelector('.bar--enemy');
   const num = $('enemy-hpnum');
 
@@ -4440,6 +4541,7 @@ function raiseMax(to, done) {
     if (!B || B.over) { clear(); done(); return; }
     B.ehpMax = list[k];
     B.ehp = B.ehpMax;
+    B.ehpPending = 0;
     renderBattle();
     if (num && ms > 0) {
 
@@ -4912,6 +5014,8 @@ function useSkill(u, i) {
       const target = ti >= 0 ? B.units[ti] : null;
       if (target) {
         target.hp = Math.round(target.max * sk.hp);
+        clearDownedMarks(target);
+        target.action = 'attack';
         target._downLogged = false;
         popUnit(ti, `+${target.hp}`, 'heal');
         pushLog(`<b>${target.name}</b> が立ち上がった`);
@@ -4933,12 +5037,19 @@ function useSkill(u, i) {
   critFixed = null;
 }
 
+function clearDownedMarks(u) {
+  if (!u) return;
+  u.charge = 0;
+  u.chant = 0;
+  u.seal = 0;
+}
+
 function landRevive(u, i) {
   const v = effOf(u, 'revive');
   if (!(v > 0) || u._landRevived) return false;
   u._landRevived = true;
   u.hp = Math.max(1, Math.round(u.max * Math.min(1, v)));
-  u.seal = 0;
+  clearDownedMarks(u);
   u._downLogged = false;
   u._lowSaid = false;
   u.action = 'attack';
@@ -4961,7 +5072,7 @@ function reviveFallen(hpRate) {
   }
   if (!u) return false;
   u.hp = Math.max(1, Math.round(u.max * (hpRate == null ? 1 : hpRate)));
-  u.seal = 0;
+  clearDownedMarks(u);
   u.action = 'attack';
   u._downLogged = false;
   u._lowSaid = false;
@@ -4977,8 +5088,38 @@ let pendingPops = [];
 
 let pendingHits = [];
 
-function popUnit(i, text, cls, d) {
-  pendingPops.push({ i, text, cls, d: d || 0 });
+function settleUnitHp() {
+  if (!B) return;
+  (B.units || []).forEach((u) => { if (u) u.hpPending = 0; });
+  if (B.reserve) B.reserve.hpPending = 0;
+}
+
+function paintUnitHp(i) {
+  if (!B) return;
+  const u = B.units[i];
+  const card = document.querySelectorAll('#units .unit')[i];
+  if (!u || !card) return;
+  const shown = Math.min(u.max, Math.max(0, u.hp + (u.hpPending || 0)));
+  const low = shown < u.max * 0.3;
+
+  const bar = card.querySelector('.bar > span');
+  if (bar) {
+    bar.style.width = clamp(shown / u.max * 100, 0, 100) + '%';
+    bar.style.background = low ? 'var(--hp-low)' : 'var(--hp)';
+  }
+  const num = card.querySelector('.unit__hp');
+  if (num) {
+    num.textContent = `${shown} / ${u.max}`;
+    num.classList.toggle('is-low', low);
+  }
+  card.classList.toggle(
+    'is-danger',
+    u.hp > 0 && shown > 0 && shown <= u.max * (CONFIG.dangerRate == null ? 0.5 : CONFIG.dangerRate)
+  );
+}
+
+function popUnit(i, text, cls, d, on) {
+  pendingPops.push({ i, text, cls, d: d || 0, on: on || null });
 }
 
 function hitUnit(i, kind = 'slash', d) {
@@ -5161,7 +5302,9 @@ function flushPops() {
   const cols = Math.max(1, B ? B.units.length : 3);
   const gap = CONFIG.hitGapMs == null ? 150 : CONFIG.hitGapMs;
   const hostW = host.clientWidth || 360;
-  const put = ({ i, text, cls, d }) => {
+  const put = (o) => {
+    const { i, text, cls, d } = o;
+    if (o.on) o.on();
     const sp = document.createElement('span');
     sp.className = `pop--${cls}`;
     sp.textContent = text;
@@ -5322,6 +5465,8 @@ function execute() {
         B.atkUps = B.atkUps.filter((x) => x.turns > 0);
       }
       if (B.critUp > 0) B.critUp--;
+
+      if (B.critUp <= 0) B.critUpMul = 1;
       if (B.defDown > 0) B.defDown--;
       if (B.atkDown > 0) B.atkDown--;
       if (B.pAtkDown > 0) B.pAtkDown--;
@@ -5514,7 +5659,19 @@ function execute() {
         }
 
         const critShown = crit && d > 0;
-        popUnit(t.i, `-${d}`, critShown ? 'crit' : (mul > 1 ? 'weak' : 'dmg'), bd);
+
+        const tu = t.u, ti = t.i;
+        let onShow = null;
+        if (bd > 0 && d > 0) {
+          tu.hpPending = (tu.hpPending || 0) + d;
+          onShow = () => {
+            tu.hpPending = Math.max(0, (tu.hpPending || 0) - d);
+
+            if (!B || B.units[ti] !== tu) return;
+            paintUnitHp(ti);
+          };
+        }
+        popUnit(ti, `-${d}`, critShown ? 'crit' : (mul > 1 ? 'weak' : 'dmg'), bd, onShow);
         hitUnit(t.i, heavyHit || critShown || mul > 1 ? 'heavy' : 'slash', bd);
         t._weak = mul > 1;
         t._crit = critShown;
@@ -5542,7 +5699,7 @@ function execute() {
         pushLog(hits.join('　／　'));
         if (forgetOf()) {
 
-          if (addYears(ult.years || 0, `<b>${ult.name}</b>`)) { loseByYears(); return; }
+          if (B.ehp > 0 && addYears(ult.years || 0, `<b>${ult.name}</b>`)) { loseByYears(); return; }
         } else {
           B.rageBack = B.turn - 1;
           pushLog('崩壊が鎮まった');
@@ -5567,7 +5724,9 @@ function execute() {
           pushLog(`${target.u.name} に <span class="dmg">${hitOne(target, esk.power, true)}</span>${wtag(target)}`);
         }
 
-        if (esk.seal) {
+        const enemyAlive = B.ehp > 0;
+
+        if (enemyAlive && esk.seal) {
           const pool = B.units.map((u, i) => ({ u, i })).filter((x) => x.u.hp > 0 && x.u.seal <= 0);
           const t = target && target.u.hp > 0 && target.u.seal <= 0
                   ? target : (pool.length ? pool[Math.floor(Math.random() * pool.length)] : null);
@@ -5579,7 +5738,8 @@ function execute() {
               pushLog(`<b>${t.u.name}</b> は縫い止められなかった`
                     + `（<span class="eff">${effName('sealGuard')}</span>）`);
             } else {
-              t.u.seal = esk.seal.turns;
+
+              t.u.seal = esk.seal.turns + 1;
               t.u.action = 'attack';
               popUnit(t.i, '封', 'seal');
               pushLog(`<b>${t.u.name}</b> は縫い止められた（<span class="seal">${esk.seal.turns}ターン 行動できない</span>）`);
@@ -5587,7 +5747,7 @@ function execute() {
           }
         }
 
-        if (esk.selfHeal) {
+        if (enemyAlive && esk.selfHeal) {
           const before = B.ehp;
           B.ehp = Math.min(B.ehpMax, B.ehp + Math.round(B.ehpMax * esk.selfHeal));
           if (B.ehp > before) {
@@ -5597,18 +5757,18 @@ function execute() {
         }
 
         if (esk.atkDown) {
-          B.pAtkDown = esk.atkDown.turns;
+          B.pAtkDown = esk.atkDown.turns + 1;
           B.pAtkDownRate = esk.atkDown.rate;
           pushLog(`味方の力が鈍った（攻撃−${Math.round(esk.atkDown.rate * 100)}%）`);
         }
 
         if (esk.selfAtkUp) {
-          B.eAtkUp = esk.selfAtkUp.turns;
+          B.eAtkUp = esk.selfAtkUp.turns + 1;
           B.eAtkUpRate = esk.selfAtkUp.rate;
           pushLog(`<b>${B.e.name}</b> の力が高まった（攻撃+${Math.round(esk.selfAtkUp.rate * 100)}%）`);
         }
 
-        if (esk.years && forgetOf()) {
+        if (enemyAlive && esk.years && forgetOf()) {
           if (addYears(esk.years, `<b>${esk.name}</b>`)) { loseByYears(); return; }
         }
 
@@ -5617,7 +5777,7 @@ function execute() {
           pushLog(`<span class="ult">崩壊が ${esk.rageUp} ターンぶん進んだ</span>`);
         }
 
-        if (esk.twice) {
+        if (enemyAlive && esk.twice) {
           const alive2 = B.units.map((u, i) => ({ u, i })).filter((x) => x.u.hp > 0);
           if (alive2.length) {
             const t2 = alive2[Math.floor(Math.random() * alive2.length)];
@@ -5638,6 +5798,7 @@ function execute() {
           for (let k = 0; k < times; k++) {
             const rest = B.units.map((u, i) => ({ u, i })).filter((x) => x.u.hp > 0);
             if (!rest.length) break;
+            if (B.ehp <= 0) break;
             const t = rest[Math.floor(Math.random() * rest.length)];
             const head = times > 1
               ? (k === 0 ? `<b>${B.e.name}</b> の攻撃` : `<b>${B.e.name}</b> は続けて撃った`)
@@ -5655,6 +5816,7 @@ function execute() {
 
       B.units.forEach((u, ui) => {
         if (u.hp > 0 || u._downLogged) return;
+        clearDownedMarks(u);
         if (landRevive(u, ui)) return;
         u._downLogged = true; B._anyDown = true;
         pushLog(`${u.name} は倒れた`);
@@ -5684,6 +5846,7 @@ function fleeBattle() {
   B.over = true;
   B.busy = false;
   $('skillcut').hidden = true;
+  settleUnitHp();
   pendingPops = [];
   pendingHits = [];
   Sound.play('common/defeat');
@@ -5696,6 +5859,7 @@ function endBattle(win) {
   B.over = true;
   B.busy = false;
   $('skillcut').hidden = true;
+  settleUnitHp();
   Sound.play(win ? 'common/victory' : 'common/defeat');
 
   enemySay(win ? 'lose' : 'win');
@@ -6006,13 +6170,24 @@ function finishReveal() {
 
 $('reveal').addEventListener('click', () => { if (CONFIG.revealSkippable) finishReveal(); });
 
-$('btn-back').onclick = () => go(current === 'tale' ? 'stage' : 'home');
+$('btn-back').onclick = () => {
+
+  if (current === 'story') { go('book'); renderBook(); return; }
+  if (current === 'tale' && taleMode === 'prologue') { taleMode = null; resetTaleButtons(); }
+  go(current === 'tale' ? 'stage' : 'home');
+};
 $('btn-tale-go').onclick = () => {
   if (current === 'after') {
     resetTaleButtons();
 
     if (B && B.e && B.e.ending && !(S.cleared && S.cleared[B.e.id])) { openEnding(true); return; }
     showResult(true);
+    return;
+  }
+  if (taleMode === 'prologue') {
+    taleMode = null;
+    resetTaleButtons();
+    go('stage'); renderStages();
     return;
   }
   if (!taleEid) return;
